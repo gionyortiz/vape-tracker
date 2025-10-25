@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaQuantum El Duro Vaper POS - Professional Sales Tracking System</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="NexaQuantum POS">
+    
+    <!-- Icons for various platforms -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/icon-16.png">
+    <link rel="apple-touch-icon" href="images/icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/icon-152.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/icon-144.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="images/icon-120.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/icon-114.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="images/icon-76.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/icon-72.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="images/icon-60.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="images/icon-57.png">
+    
+    <!-- Microsoft specific -->
+    <meta name="msapplication-TileImage" content="images/icon-144.png">
+    <meta name="msapplication-TileColor" content="#2c3e50">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@zxing/browser@latest"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/nexaquantum-logo.png" alt="NexaQuantum" class="company-logo">
+                <div class="brand-text">
+                    <span class="company-name">NexaQuantum</span>
+                    <span class="app-name">El Duro Vaper POS</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#inventory" class="nav-link" data-page="inventory">
+                        <i class="fas fa-boxes"></i>
+                        Inventory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sales" class="nav-link" data-page="sales">
+                        <i class="fas fa-cash-register"></i>
+                        Sales
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#customers" class="nav-link" data-page="customers">
+                        <i class="fas fa-users"></i>
+                        Customers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#scanner" class="nav-link" data-page="scanner">
+                        <i class="fas fa-barcode"></i>
+                        Scanner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#employees" class="nav-link" data-page="employees">
+                        <i class="fas fa-user-tie"></i>
+                        Employees
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#multi-store" class="nav-link" data-page="multi-store">
+                        <i class="fas fa-building"></i>
+                        Stores
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#reports" class="nav-link" data-page="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link" data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+            <div class="user-profile" style="display: none;">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Owner</div>
+                </div>
+                <button class="logout-btn" id="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <div class="page-header">
+                <div class="page-header-branding">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                    <div class="company-branding">
+                        <span class="powered-by">Powered by</span>
+                        <img src="images/nexaquantum-logo.png" alt="NexaQuantum" class="header-logo">
+                        <span class="company-name-header">NexaQuantum</span>
+                    </div>
+                </div>
+                <div class="date-time" id="current-datetime"></div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="today-sales">$0.00</h3>
+                        <p>Today's Sales</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="today-transactions">0</h3>
+                        <p>Transactions</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="low-stock-items">0</h3>
+                        <p>Low Stock Items</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-customers">0</h3>
+                        <p>Total Customers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-section">
+                    <h2><i class="fas fa-chart-line"></i> Sales Chart</h2>
+                    <canvas id="sales-chart"></canvas>
+                </div>
+                
+                <div class="dashboard-section">
+                    <h2><i class="fas fa-star"></i> Top Products</h2>
+                    <div id="top-products-list"></div>
+                </div>
+                
+                <div class="dashboard-section">
+                    <h2><i class="fas fa-clock"></i> Recent Transactions</h2>
+                    <div id="recent-transactions"></div>
+                </div>
+                
+                <div class="dashboard-section">
+                    <h2><i class="fas fa-bell"></i> Alerts</h2>
+                    <div id="alerts-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Page -->
+        <div id="inventory-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-boxes"></i> Inventory Management</h1>
+                <div class="inventory-actions">
+                    <button class="btn-success" id="scan-add-product-btn">
+                        <i class="fas fa-barcode"></i> Scan to Add
+                    </button>
+                    <button class="btn-primary" id="quick-add-product-btn">
+                        <i class="fas fa-zap"></i> Quick Add
+                    </button>
+                    <button class="btn-primary" id="add-product-btn">
+                        <i class="fas fa-plus"></i> Manual Add
+                    </button>
+                    <button class="btn-secondary" id="bulk-import-btn">
+                        <i class="fas fa-upload"></i> Import
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quick Scanner for Adding Products -->
+            <div class="quick-scanner-section" id="inventory-scanner" style="display: none;">
+                <div class="scanner-card">
+                    <div class="scanner-header">
+                        <h3><i class="fas fa-camera"></i> Scan Barcode to Add Product</h3>
+                        <button class="btn-secondary" id="close-inventory-scanner">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                    <div class="scanner-content">
+                        <div class="scanner-video-wrapper">
+                            <video id="inventory-scanner-video" style="width: 100%; max-width: 400px; border-radius: 8px;"></video>
+                            <div class="scanner-overlay">
+                                <div class="scanner-line"></div>
+                                <div class="scanner-instructions">Position barcode in the center</div>
+                            </div>
+                        </div>
+                        <div class="scanner-results">
+                            <div id="scanned-barcode-result"></div>
+                            <div class="manual-barcode-entry">
+                                <input type="text" id="manual-barcode-inventory" placeholder="Or enter barcode manually...">
+                                <button class="btn-primary" id="lookup-barcode-btn">Look Up</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Add Modal -->
+            <div class="quick-add-modal" id="quick-add-modal" style="display: none;">
+                <div class="quick-add-content">
+                    <h3><i class="fas fa-zap"></i> Quick Add Product</h3>
+                    <form id="quick-add-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quick-name">Product Name *</label>
+                                <input type="text" id="quick-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quick-price">Price *</label>
+                                <input type="number" id="quick-price" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quick-category">Category</label>
+                                <select id="quick-category">
+                                    <option value="devices">Devices</option>
+                                    <option value="eliquids">E-Liquids</option>
+                                    <option value="accessories">Accessories</option>
+                                    <option value="hardware">Hardware</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="quick-stock">Stock Quantity *</label>
+                                <input type="number" id="quick-stock" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="cancel-quick-add">Cancel</button>
+                            <button type="submit" class="btn-success">Add Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="inventory-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="product-search" placeholder="Search products...">
+                </div>
+                
+                <div class="filter-controls">
+                    <select id="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="vapes">Vaping Devices</option>
+                        <option value="liquids">E-Liquids</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="beer">Beer & Beverages</option>
+                        <option value="merchandise">Merchandise</option>
+                    </select>
+                    
+                    <button class="btn-secondary" id="barcode-scan-btn">
+                        <i class="fas fa-barcode"></i> Scan Barcode
+                    </button>
+                </div>
+            </div>
+            
+            <div class="inventory-table-container">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>SKU</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        <!-- Products will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sales Page -->
+        <div id="sales-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-cash-register"></i> Point of Sale</h1>
+                <button class="btn-primary" id="new-sale-btn">
+                    <i class="fas fa-plus"></i> New Sale
+                </button>
+            </div>
+            
+            <div class="pos-container">
+                <div class="pos-left">
+                    <div class="product-search">
+                        <input type="text" id="pos-search" placeholder="Search or scan product...">
+                        <button class="btn-secondary" id="pos-barcode-btn">
+                            <i class="fas fa-barcode"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="product-grid" id="product-grid">
+                        <!-- Products will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="pos-right">
+                    <div class="cart-section">
+                        <h3><i class="fas fa-shopping-cart"></i> Cart</h3>
+                        <div class="cart-items" id="cart-items">
+                            <!-- Cart items will be populated here -->
+                        </div>
+                        
+                        <div class="cart-total">
+                            <div class="subtotal">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="tax">
+                                <span>Tax:</span>
+                                <span id="tax">$0.00</span>
+                            </div>
+                            <div class="total">
+                                <span>Total:</span>
+                                <span id="total">$0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-section">
+                            <select id="payment-method">
+                                <option value="cash">Cash</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="digital">Digital Payment</option>
+                            </select>
+                            
+                            <button class="btn-success btn-large" id="checkout-btn">
+                                <i class="fas fa-check"></i> Complete Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Page -->
+        <div id="scanner-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-barcode"></i> Barcode Scanner</h1>
+                <div class="scanner-controls">
+                    <button class="btn-primary" id="start-scanner-btn">
+                        <i class="fas fa-camera"></i> Start Camera
+                    </button>
+                    <button class="btn-secondary" id="stop-scanner-btn" style="display: none;">
+                        <i class="fas fa-stop"></i> Stop Scanner
+                    </button>
+                </div>
+            </div>
+            
+            <div class="scanner-container">
+                <div class="scanner-video-container">
+                    <video id="scanner-video" style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
+                    <div class="scanner-overlay">
+                        <div class="scanner-line"></div>
+                    </div>
+                </div>
+                
+                <div class="scanner-results">
+                    <h3>Scan Results</h3>
+                    <div id="scan-results-list"></div>
+                    
+                    <div class="manual-input">
+                        <h4>Manual Entry</h4>
+                        <input type="text" id="manual-barcode" placeholder="Enter barcode manually...">
+                        <button class="btn-primary" id="manual-lookup-btn">Lookup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Page -->
+        <div id="employees-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-user-tie"></i> Employee Management</h1>
+                <button class="btn-primary" id="add-employee-btn">
+                    <i class="fas fa-plus"></i> Add Employee
+                </button>
+            </div>
+            
+            <div class="employee-stats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="total-employees">0</h3>
+                        <p>Total Employees</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3 id="clocked-in">0</h3>
+                        <p>Currently Clocked In</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="stat-info">
+                        <h3 id="total-payroll">$0</h3>
+                        <p>This Week's Payroll</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="employee-table-container">
+                <table class="employee-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Hours This Week</th>
+                            <th>Sales This Month</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-table-body">
+                        <!-- Employee rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="time-clock">
+                <h3><i class="fas fa-clock"></i> Time Clock</h3>
+                <div class="clock-controls">
+                    <button class="btn-success" id="clock-in-btn">Clock In</button>
+                    <button class="btn-warning" id="break-btn">Start Break</button>
+                    <button class="btn-danger" id="clock-out-btn">Clock Out</button>
+                </div>
+                <div id="current-shift-info"></div>
+            </div>
+        </div>
+
+        <!-- Multi-Store Page -->
+        <div id="multi-store-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-building"></i> Multi-Store Management</h1>
+                <div class="store-actions">
+                    <button class="btn-primary" id="add-store-btn">
+                        <i class="fas fa-plus"></i> Add Store
+                    </button>
+                    <button class="btn-secondary" id="sync-stores-btn">
+                        <i class="fas fa-sync"></i> Sync All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="current-store-info">
+                <h3>Current Store</h3>
+                <div id="current-store-details"></div>
+                <select id="store-switcher">
+                    <option value="">Select Store...</option>
+                </select>
+            </div>
+            
+            <div class="stores-grid">
+                <!-- Store cards will be populated here -->
+            </div>
+            
+            <div class="cloud-sync-section">
+                <h3><i class="fas fa-cloud"></i> Cloud Synchronization</h3>
+                <div class="sync-status">
+                    <div class="status-indicator" id="sync-status">
+                        <i class="fas fa-circle"></i>
+                        <span>Offline Mode</span>
+                    </div>
+                    <div class="last-sync">
+                        Last Sync: <span id="last-sync-time">Never</span>
+                    </div>
+                </div>
+                
+                <div class="sync-controls">
+                    <input type="text" id="api-key-input" placeholder="Enter API Key for Cloud Sync...">
+                    <button class="btn-primary" id="enable-sync-btn">Enable Sync</button>
+                    <button class="btn-secondary" id="manual-sync-btn" style="display: none;">Manual Sync</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Reports Page -->
+        <div id="reports-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-chart-bar"></i> Enterprise Reports & Analytics</h1>
+                <div class="report-actions">
+                    <button class="btn-primary" id="generate-report-btn">
+                        <i class="fas fa-file-alt"></i> Generate Report
+                    </button>
+                    <button class="btn-secondary" id="schedule-report-btn">
+                        <i class="fas fa-calendar"></i> Schedule Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="report-types">
+                <div class="report-type-card" data-type="sales">
+                    <div class="report-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Sales Reports</h3>
+                    <p>Daily, weekly, monthly sales analysis with trends and comparisons</p>
+                </div>
+                
+                <div class="report-type-card" data-type="inventory">
+                    <div class="report-icon"><i class="fas fa-boxes"></i></div>
+                    <h3>Inventory Reports</h3>
+                    <p>Stock levels, turnover analysis, ABC classification, reorder suggestions</p>
+                </div>
+                
+                <div class="report-type-card" data-type="financial">
+                    <div class="report-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>Financial Reports</h3>
+                    <p>Profit & loss, cash flow, margin analysis by category and product</p>
+                </div>
+                
+                <div class="report-type-card" data-type="employee">
+                    <div class="report-icon"><i class="fas fa-user-chart"></i></div>
+                    <h3>Employee Reports</h3>
+                    <p>Performance metrics, payroll, time tracking, commission calculations</p>
+                </div>
+                
+                <div class="report-type-card" data-type="tax">
+                    <div class="report-icon"><i class="fas fa-receipt"></i></div>
+                    <h3>Tax Reports</h3>
+                    <p>Sales tax collection, exemptions, filing reports for compliance</p>
+                </div>
+                
+                <div class="report-type-card" data-type="customer">
+                    <div class="report-icon"><i class="fas fa-users"></i></div>
+                    <h3>Customer Reports</h3>
+                    <p>Customer analytics, loyalty metrics, purchase history analysis</p>
+                </div>
+            </div>
+            
+            <div class="kpi-dashboard">
+                <h3>Key Performance Indicators</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="revenue-growth">+0%</div>
+                        <div class="kpi-label">Revenue Growth</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="profit-margin">0%</div>
+                        <div class="kpi-label">Profit Margin</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="inventory-turnover">0x</div>
+                        <div class="kpi-label">Inventory Turnover</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avg-transaction">$0</div>
+                        <div class="kpi-label">Avg Transaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Settings Page -->
+        <div id="settings-page" class="page">
+            <div class="page-header">
+                <h1><i class="fas fa-cog"></i> System Settings</h1>
+                <button class="btn-primary" id="save-settings-btn">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+            
+            <div class="settings-tabs">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="general">General</button>
+                    <button class="tab-btn" data-tab="pos">POS Settings</button>
+                    <button class="tab-btn" data-tab="hardware">Hardware</button>
+                    <button class="tab-btn" data-tab="integrations">Integrations</button>
+                    <button class="tab-btn" data-tab="security">Security</button>
+                </div>
+                
+                <div class="tab-content active" id="general-tab">
+                    <h3>General Settings</h3>
+                    <div class="form-group">
+                        <label>Store Name</label>
+                        <input type="text" id="store-name" value="El Duro Vaper">
+                    </div>
+                    <div class="form-group">
+                        <label>Language / Idioma</label>
+                        <select id="app-language">
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Rate (%)</label>
+                        <input type="number" id="tax-rate" step="0.01" value="8.25">
+                    </div>
+                    <div class="form-group">
+                        <label>Currency</label>
+                        <select id="currency">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Low Stock Threshold</label>
+                        <input type="number" id="low-stock-threshold" value="10">
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="pos-tab">
+                    <h3>Point of Sale Settings</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="auto-print-receipt">
+                            Auto-print receipts
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="open-cash-drawer">
+                            Auto-open cash drawer on sale
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Receipt Footer Text</label>
+                        <textarea id="receipt-footer">Thank you for your business!\nVisit us again soon!</textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="hardware-tab">
+                    <h3>Hardware Configuration</h3>
+                    <div class="hardware-status">
+                        <div class="hardware-item">
+                            <i class="fas fa-print"></i>
+                            <span>Receipt Printer</span>
+                            <div class="status disconnected">Disconnected</div>
+                            <button class="btn-secondary">Connect</button>
+                        </div>
+                        <div class="hardware-item">
+                            <i class="fas fa-cash-register"></i>
+                            <span>Cash Drawer</span>
+                            <div class="status disconnected">Disconnected</div>
+                            <button class="btn-secondary">Connect</button>
+                        </div>
+                        <div class="hardware-item">
+                            <i class="fas fa-barcode"></i>
+                            <span>Barcode Scanner</span>
+                            <div class="status connected">Connected</div>
+                            <button class="btn-secondary">Test</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="integrations-tab">
+                    <h3>Third-Party Integrations</h3>
+                    <div class="integration-list">
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <h4>QuickBooks</h4>
+                                <p>Sync financial data with QuickBooks Online</p>
+                            </div>
+                            <button class="btn-primary">Connect</button>
+                        </div>
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <h4>Shopify</h4>
+                                <p>Sync inventory with online store</p>
+                            </div>
+                            <button class="btn-primary">Connect</button>
+                        </div>
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <h4>Mailchimp</h4>
+                                <p>Customer email marketing automation</p>
+                            </div>
+                            <button class="btn-primary">Connect</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="security-tab">
+                    <h3>Security Settings</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="require-login">
+                            Require employee login
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Session Timeout (minutes)</label>
+                        <input type="number" id="session-timeout" value="120">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="audit-trail">
+                            Enable audit trail logging
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-sign-in-alt"></i> Employee Login</h2>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Login</button>
+                    </div>
+                </form>
+                <div class="demo-credentials">
+                    <small>Demo: Username: admin, Password: admin123</small>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Company Footer -->
+    <footer class="company-footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="images/nexaquantum-logo.png" alt="NexaQuantum" class="footer-logo-img">
+                <span class="footer-company-name">NexaQuantum</span>
+            </div>
+            <div class="footer-info">
+                <span class="footer-text">Professional Business Solutions</span>
+                <span class="footer-version">v1.0.0</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Product</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label for="product-name">Product Name</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-category">Category</label>
+                    <select id="product-category" required>
+                        <option value="">Select Category</option>
+                        <option value="vapes">Vaping Devices</option>
+                        <option value="liquids">E-Liquids</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="beer">Beer & Beverages</option>
+                        <option value="merchandise">Merchandise</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-sku">SKU</label>
+                        <input type="text" id="product-sku" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-barcode">Barcode</label>
+                        <input type="text" id="product-barcode">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-price">Price ($)</label>
+                        <input type="number" id="product-price" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-stock">Initial Stock</label>
+                        <input type="number" id="product-stock" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-description">Description</label>
+                    <textarea id="product-description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-product">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/nexaquantum-licensing.js"></script>
+    <script src="js/nexaquantum-payments.js"></script>
+    <script src="js/payment-demo.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/sales.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/data-manager.js"></script>
+    
+    <!-- Internationalization -->
+    <script src="js/i18n.js"></script>
+    
+    <!-- Enterprise Scripts -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script src="js/enterprise-app.js"></script>
+    <script src="js/hardware-integration.js"></script>
+    <script src="js/employee-management.js"></script>
+    <script src="js/enterprise-reporting.js"></script>
+    <script src="js/multi-store-manager.js"></script>
+    <script src="js/vape-specific-features.js"></script>
+    <script src="js/enhanced-inventory.js"></script>
+    <script src="js/visual-effects.js"></script>
+    <script src="js/mobile-enhancements.js"></script>
+    <script src="test-scenarios.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('NexaQuantum POS Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+        
+        // Handle app install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button after license modal
+            setTimeout(() => {
+                if (deferredPrompt) {
+                    const installButton = document.createElement('button');
+                    installButton.textContent = '📱 Install App';
+                    installButton.className = 'install-app-btn';
+                    installButton.onclick = () => {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('User accepted the install prompt');
+                            }
+                            deferredPrompt = null;
+                            installButton.remove();
+                        });
+                    };
+                    
+                    document.body.appendChild(installButton);
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
