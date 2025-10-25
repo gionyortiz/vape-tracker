@@ -3,13 +3,13 @@
   "name": "NexaQuantum Vape",
   "short_name": "NexaQuantum",
   "description": "Professional Point of Sale system for vape retailers",
-  "start_url": "/vape-tracker/",
+  "start_url": "/",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen"],
   "background_color": "#2c3e50",
   "theme_color": "#3498db",
   "orientation": "portrait-primary",
-  "scope": "/vape-tracker/",
+  "scope": "/",
   "lang": "en-US",
   "dir": "ltr",
   "categories": ["business", "productivity", "finance"],
@@ -29,28 +29,28 @@
   ],
   "screenshots": [
     {
-      "src": "/vape-tracker/images/screenshots/desktop-1920x1080.png",
+      "src": "/images/screenshots/desktop-1920x1080.png",
       "sizes": "680x593",
       "type": "image/png",
       "form_factor": "wide",
       "label": "NexaQuantum POS Dashboard - Desktop View"
     },
     {
-      "src": "/vape-tracker/images/screenshots/desktop-1.png",
+      "src": "/images/screenshots/desktop-1.png",
       "sizes": "680x593",
       "type": "image/png",
       "form_factor": "wide",
       "label": "NexaQuantum POS Analytics"
     },
     {
-      "src": "/vape-tracker/images/screenshots/mobile-390x844.png", 
+      "src": "/images/screenshots/mobile-390x844.png", 
       "sizes": "680x593",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Mobile POS Interface"
     },
     {
-      "src": "/vape-tracker/images/screenshots/mobile-1.png",
+      "src": "/images/screenshots/mobile-1.png",
       "sizes": "680x593",
       "type": "image/png",
       "form_factor": "narrow",
@@ -59,49 +59,49 @@
   ],
   "icons": [
     {
-      "src": "/vape-tracker/images/icon-72.png",
+      "src": "/images/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-96.png",
+      "src": "/images/icon-96.png",
       "sizes": "96x96", 
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-128.png",
+      "src": "/images/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-144.png",
+      "src": "/images/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-152.png",
+      "src": "/images/icon-152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-192.png",
+      "src": "/images/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/vape-tracker/images/icon-384.png",
+      "src": "/images/icon-384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/vape-tracker/images/icon-512.png",
+      "src": "/images/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -112,10 +112,10 @@
       "name": "New Sale",
       "short_name": "Sale", 
       "description": "Start a new sale transaction",
-      "url": "/vape-tracker/?action=new-sale",
+      "url": "/?action=new-sale",
       "icons": [
         {
-          "src": "/vape-tracker/images/shortcuts/sale-icon.png",
+          "src": "/images/shortcuts/sale-icon.png",
           "sizes": "96x96"
         }
       ]
@@ -124,10 +124,10 @@
       "name": "Inventory",
       "short_name": "Inventory",
       "description": "Manage inventory",
-      "url": "/vape-tracker/?action=inventory", 
+      "url": "/?action=inventory", 
       "icons": [
         {
-          "src": "/vape-tracker/images/shortcuts/inventory-icon.png",
+          "src": "/images/shortcuts/inventory-icon.png",
           "sizes": "96x96"
         }
       ]
@@ -136,10 +136,10 @@
       "name": "Reports",
       "short_name": "Reports",
       "description": "View sales reports",
-      "url": "/vape-tracker/?action=reports",
+      "url": "/?action=reports",
       "icons": [
         {
-          "src": "/vape-tracker/images/shortcuts/reports-icon.png",
+          "src": "/images/shortcuts/reports-icon.png",
           "sizes": "96x96"
         }
       ]

@@ -1,33 +1,33 @@
 // Service Worker for NexaQuantum POS PWA
 // Enables offline functionality and app-like experience
 
-const CACHE_NAME = 'nexaquantum-pos-v1.3.2';
+const CACHE_NAME = 'nexaquantum-vape-v1.0.0';
 const urlsToCache = [
-  '/vape-tracker/',
-  '/vape-tracker/index.html',
-  '/vape-tracker/manifest.json',
-  '/vape-tracker/css/styles.css',
-  '/vape-tracker/js/app.js',
-  '/vape-tracker/js/i18n.js',
-  '/vape-tracker/js/nexaquantum-licensing.js',
-  '/vape-tracker/js/nexaquantum-payments.js',
-  '/vape-tracker/js/payment-demo.js',
-  '/vape-tracker/js/inventory.js',
-  '/vape-tracker/js/sales.js',
-  '/vape-tracker/js/dashboard.js',
-  '/vape-tracker/js/data-manager.js',
-  '/vape-tracker/js/enterprise-app.js',
-  '/vape-tracker/js/hardware-integration.js',
-  '/vape-tracker/js/employee-management.js',
-  '/vape-tracker/js/enterprise-reporting.js',
-  '/vape-tracker/js/multi-store-manager.js',
-  '/vape-tracker/js/vape-specific-features.js',
-  '/vape-tracker/js/enhanced-inventory.js',
-  '/vape-tracker/js/visual-effects.js',
-  '/vape-tracker/js/mobile-enhancements.js',
-  '/vape-tracker/images/nexaquantum-logo.png',
-  '/vape-tracker/images/icon-192.png',
-  '/vape-tracker/images/icon-512.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/css/styles.css',
+  '/js/app.js',
+  '/js/i18n.js',
+  '/js/nexaquantum-licensing.js',
+  '/js/nexaquantum-payments.js',
+  '/js/payment-demo.js',
+  '/js/inventory.js',
+  '/js/sales.js',
+  '/js/dashboard.js',
+  '/js/data-manager.js',
+  '/js/enterprise-app.js',
+  '/js/hardware-integration.js',
+  '/js/employee-management.js',
+  '/js/enterprise-reporting.js',
+  '/js/multi-store-manager.js',
+  '/js/vape-specific-features.js',
+  '/js/enhanced-inventory.js',
+  '/js/visual-effects.js',
+  '/js/mobile-enhancements.js',
+  '/images/nexaquantum-logo.png',
+  '/images/icon-192.png',
+  '/images/icon-512.png'
 ];
 
 // Install Service Worker
