@@ -1,12 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.nexaquantum.vape.pos",
-      "sha256_cert_fingerprints": [
-        "PLACEHOLDER_YOUR_SHA256_FINGERPRINT_HERE"
-      ]
-    }
-  }
-]
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.nexaquantum.vape.pos",
+        "sha256_cert_fingerprints": ["C1:12:E5:9D:AD:0F:44:1E:CC:22:D2:E1:7E:4C:92:79:44:44:20:BB:E6:02:B0:C8:96:E7:22:3A:B8:BC:25:13"]
+      }
+    }]
