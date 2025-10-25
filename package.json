@@ -1,0 +1,57 @@
+{
+  "name": "nexaquantum-el-duro-vaper-pos",
+  "displayName": "NexaQuantum El Duro Vaper POS",
+  "version": "1.0.0",
+  "description": "Professional Point of Sale system for vape stores by NexaQuantum with subscription licensing and app store integration.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "http-server -p 8080",
+    "build": "cordova build",
+    "build-ios": "cordova build ios",
+    "build-android": "cordova build android",
+    "run-ios": "cordova run ios",
+    "run-android": "cordova run android",
+    "prepare": "cordova prepare",
+    "clean": "cordova clean"
+  },
+  "keywords": [
+    "pos",
+    "point-of-sale",
+    "vape",
+    "retail",
+    "inventory",
+    "sales"
+  ],
+  "author": "NexaQuantum",
+  "license": "MIT",
+  "dependencies": {
+    "cordova": "^12.0.0",
+    "cordova-android": "^12.0.0",
+    "cordova-ios": "^7.0.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-camera": "^7.0.0",
+      "cordova-plugin-file": "^8.0.0",
+      "cordova-plugin-network-information": "^3.0.0",
+      "cordova-plugin-device": "^2.1.0",
+      "cordova-plugin-statusbar": "^4.0.0",
+      "cordova-plugin-splashscreen": "^6.0.2",
+      "cordova-plugin-whitelist": "^1.3.5",
+      "cordova-plugin-inappbrowser": "^6.0.0",
+      "cordova-plugin-vibration": "^3.1.1",
+      "cordova-plugin-local-notification": "^0.9.0-beta.2",
+      "cordova-plugin-barcodescanner": "^0.7.4",
+      "cordova-plugin-printer": "^0.8.0",
+      "cordova-plugin-purchase": "^13.1.0",
+      "cordova-plugin-inapppurchase": "^1.2.0"
+    }
+  }
+}

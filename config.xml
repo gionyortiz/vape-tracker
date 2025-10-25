@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.nexaquantum.elduro.vaper.pos" 
+        version="1.0.0" 
+        xmlns="http://www.w3.org/ns/widgets" 
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    
+    <name>NexaQuantum El Duro Vaper POS</name>
+    <description>Professional Point of Sale system for vape retailers by NexaQuantum</description>
+    <author email="support@nexaquantum.com" href="https://nexaquantum.com">NexaQuantum Team</author>
+    
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    
+    <!-- Android Configuration -->
+    <platform name="android">
+        <allow-intent href="market:*" />
+        
+        <!-- App Icons -->
+        <icon density="ldpi" src="images/android/icon-36-ldpi.png" />
+        <icon density="mdpi" src="images/android/icon-48-mdpi.png" />
+        <icon density="hdpi" src="images/android/icon-72-hdpi.png" />
+        <icon density="xhdpi" src="images/android/icon-96-xhdpi.png" />
+        <icon density="xxhdpi" src="images/android/icon-144-xxhdpi.png" />
+        <icon density="xxxhdpi" src="images/android/icon-192-xxxhdpi.png" />
+        
+        <!-- Splash Screens -->
+        <splash density="land-ldpi" src="images/android/splash-land-ldpi.png" />
+        <splash density="land-mdpi" src="images/android/splash-land-mdpi.png" />
+        <splash density="land-hdpi" src="images/android/splash-land-hdpi.png" />
+        <splash density="land-xhdpi" src="images/android/splash-land-xhdpi.png" />
+        
+        <!-- Permissions -->
+        <uses-permission android:name="android.permission.CAMERA" />
+        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <uses-permission android:name="android.permission.VIBRATE" />
+        <uses-permission android:name="com.android.vending.BILLING" />
+        
+        <!-- Target SDK -->
+        <preference name="android-targetSdkVersion" value="33" />
+        <preference name="android-minSdkVersion" value="22" />
+    </platform>
+    
+    <!-- Preferences -->
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#2c3e50" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    
+</widget>

@@ -1,0 +1,10 @@
+{
+    "android": {
+        "release": {
+            "keystore": "nexaquantum-release-key.keystore",
+            "alias": "nexaquantum",
+            "storePassword": "nexaquantum123",
+            "password": "nexaquantum123"
+        }
+    }
+}
