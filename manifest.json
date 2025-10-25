@@ -15,65 +15,79 @@
   "screenshots": [
     {
       "src": "images/screenshots/desktop-1920x1080.png",
-      "sizes": "1920x1080",
+      "sizes": "680x593",
       "type": "image/png",
-      "platform": "wide",
-      "label": "NexaQuantum POS Dashboard"
+      "form_factor": "wide",
+      "label": "NexaQuantum POS Dashboard - Desktop View"
+    },
+    {
+      "src": "images/screenshots/desktop-1.png",
+      "sizes": "680x593",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NexaQuantum POS Analytics"
     },
     {
       "src": "images/screenshots/mobile-390x844.png", 
-      "sizes": "390x844",
+      "sizes": "680x593",
       "type": "image/png",
-      "platform": "narrow",
+      "form_factor": "narrow",
       "label": "Mobile POS Interface"
+    },
+    {
+      "src": "images/screenshots/mobile-1.png",
+      "sizes": "680x593",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Inventory Management"
     }
   ],
   "icons": [
     {
       "src": "images/icon-72.png",
-      "sizes": "72x72",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-96.png",
-      "sizes": "96x96", 
+      "sizes": "680x593", 
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-128.png",
-      "sizes": "128x128",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-144.png",
-      "sizes": "144x144",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-152.png",
-      "sizes": "152x152",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-192.png",
-      "sizes": "192x192",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
       "src": "images/icon-384.png",
-      "sizes": "384x384",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/icon-512.png",
-      "sizes": "512x512",
+      "sizes": "680x593",
       "type": "image/png",
       "purpose": "any maskable"
     }
