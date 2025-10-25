@@ -5,13 +5,28 @@
   "description": "Professional Point of Sale system for vape retailers",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
   "background_color": "#2c3e50",
   "theme_color": "#3498db",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en-US",
+  "dir": "ltr",
   "categories": ["business", "productivity", "finance"],
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "*.github.io"
+    }
+  ],
   "screenshots": [
     {
       "src": "images/screenshots/desktop-1920x1080.png",
