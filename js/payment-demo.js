@@ -1,16 +1,17 @@
-// Simple Working Payment Demo for NexaQuantum POS
-// This provides a functional demo payment system for testing
+// NexaQuantum POS - FREE VERSION
+// No payment required - Full access for everyone
 
 class NexaQuantumPaymentDemo {
     constructor() {
         this.isTestMode = true;
+        this.isFreeVersion = true; // FREE VERSION
         this.init();
     }
     
     init() {
-        this.createPaymentButtons();
-        this.addPaymentStyles();
-        console.log('NexaQuantum Payment Demo initialized');
+        console.log('✅ NexaQuantum POS - FREE VERSION');
+        console.log('🎉 Full access granted - No payment required!');
+        // Payment system disabled in free version
     }
     
     createPaymentButtons() {

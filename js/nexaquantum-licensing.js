@@ -14,10 +14,28 @@ class NexaQuantumLicenseManager {
     }
     
     init() {
-        this.loadLicenseData();
-        this.setupLicenseValidation();
-        this.createLicenseUI();
-        this.startLicenseChecking();
+        // FREE VERSION - Auto-activate with full access
+        this.isLicensed = true;
+        this.licenseType = 'lifetime';
+        this.subscriptionStatus = 'active';
+        this.expirationDate = new Date('2099-12-31');
+        
+        // Grant free lifetime license
+        const freeLicense = {
+            key: 'FREE-FULL-ACCESS',
+            type: 'lifetime',
+            expiration: '2099-12-31',
+            activatedDate: new Date().toISOString(),
+            features: 'all'
+        };
+        localStorage.setItem('nexaquantum_license', JSON.stringify(freeLicense));
+        
+        // Still create UI elements but hide payment prompts
+        this.createLicenseStatus();
+        this.addLicenseStyles();
+        
+        console.log('✅ NexaQuantum POS - FREE FULL ACCESS VERSION');
+        console.log('🎉 All features unlocked - No payment required!');
     }
     
     // Platform Detection
@@ -55,31 +73,32 @@ class NexaQuantumLicenseManager {
     
     // Validate current license
     validateCurrentLicense() {
-        const now = new Date();
+        // FREE VERSION - Full access for everyone, no restrictions
+        this.isLicensed = true;
+        this.licenseType = 'lifetime';
+        this.subscriptionStatus = 'active';
+        this.expirationDate = new Date('2099-12-31'); // Never expires
         
-        if (this.licenseType === 'lifetime') {
-            this.isLicensed = true;
-            this.subscriptionStatus = 'active';
-            return true;
-        }
+        // Save free license to localStorage
+        const freeLicense = {
+            key: 'FREE-FULL-ACCESS',
+            type: 'lifetime',
+            expiration: '2099-12-31',
+            activatedDate: new Date().toISOString(),
+            features: 'all'
+        };
+        localStorage.setItem('nexaquantum_license', JSON.stringify(freeLicense));
         
-        if (this.expirationDate && now < this.expirationDate) {
-            this.isLicensed = true;
-            this.subscriptionStatus = 'active';
-            return true;
-        }
-        
-        this.isLicensed = false;
-        this.subscriptionStatus = 'expired';
-        return false;
+        return true;
     }
     
     // Create License UI
     createLicenseUI() {
-        this.createLicenseModal();
-        this.createSubscriptionPlans();
+        // FREE VERSION - No payment modals needed
         this.createLicenseStatus();
         this.addLicenseStyles();
+        // Payment modals and subscription plans are disabled
+        console.log('License UI: FREE VERSION - No payment required');
     }
     
     createLicenseModal() {
@@ -252,43 +271,13 @@ class NexaQuantumLicenseManager {
         const statusElement = document.getElementById('license-status');
         if (!statusElement) return;
         
-        if (this.isLicensed) {
-            const daysUntilExpiry = this.getDaysUntilExpiry();
-            let statusText = '';
-            let statusClass = 'licensed';
-            
-            if (this.licenseType === 'lifetime') {
-                statusText = '✅ Licensed';
-                statusClass = 'licensed';
-            } else if (daysUntilExpiry > 30) {
-                statusText = '✅ Licensed';
-                statusClass = 'licensed';
-            } else if (daysUntilExpiry > 7) {
-                statusText = `⚠️ Expires in ${daysUntilExpiry} days`;
-                statusClass = 'expiring-soon';
-            } else if (daysUntilExpiry > 0) {
-                statusText = `⚠️ Expires in ${daysUntilExpiry} days`;
-                statusClass = 'expiring-critical';
-            }
-            
-            statusElement.innerHTML = `
-                <div class="license-status-content ${statusClass}">
-                    <span class="license-status-text">${statusText}</span>
-                    <button class="license-manage-btn" onclick="nexaLicense.showLicenseModal()">
-                        Manage
-                    </button>
-                </div>
-            `;
-        } else {
-            statusElement.innerHTML = `
-                <div class="license-status-content unlicensed">
-                    <span class="license-status-text">❌ Trial Mode</span>
-                    <button class="license-upgrade-btn" onclick="nexaLicense.showLicenseModal()">
-                        Upgrade
-                    </button>
-                </div>
-            `;
-        }
+        // FREE VERSION - Show free/licensed status
+        statusElement.innerHTML = `
+            <div class="license-status-content licensed">
+                <span class="license-status-text">🎉 FREE - Full Access</span>
+                <span class="license-type-badge">No License Required</span>
+            </div>
+        `;
     }
     
     // App Store Integration

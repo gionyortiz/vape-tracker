@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.nexaquantum.elduro.vaper.pos" 
+<widget id="com.nexaquantum.vape.pos" 
         version="1.0.0" 
         xmlns="http://www.w3.org/ns/widgets" 
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
     
-    <name>NexaQuantum El Duro Vaper POS</name>
-    <description>Professional Point of Sale system for vape retailers by NexaQuantum</description>
-    <author email="support@nexaquantum.com" href="https://nexaquantum.com">NexaQuantum Team</author>
+    <name>NexaQuantum Vape</name>
+    <description>Professional Point of Sale system for vape retailers</description>
+    <author email="support@nexaquantumvape.com" href="https://nexaquantumvape.com">NexaQuantum</author>
     
     <content src="index.html" />
     <access origin="*" />

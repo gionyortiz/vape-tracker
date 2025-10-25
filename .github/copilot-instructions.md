@@ -1,66 +1,168 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
-- [x] Verify that the copilot-instructions.md file in the .github directory is created.
+# NexaQuantum El Duro Vaper POS - AI Agent Instructions
 
-- [x] Clarify Project Requirements
-	<!-- El Duro Vaper complete sales tracking system with HTML5, CSS3, Vanilla JavaScript -->
+**Purpose**: Help AI coding agents be immediately productive in this hybrid web/mobile POS system codebase.
 
-- [x] Scaffold the Project
-	<!-- Complete project structure created with HTML, CSS, JavaScript files and comprehensive features -->
+## Architecture Overview
 
-- [x] Customize the Project
-	<!-- Implemented full inventory management, POS system, dashboard analytics, and data management features -->
+**Type**: Single-page app (SPA) with vanilla JavaScript, packaged as PWA + Cordova mobile apps  
+**Stack**: HTML5, CSS3, Vanilla JS → NO frameworks (React/Vue/Angular). Avoid introducing build steps.  
+**Data layer**: 100% client-side. All state lives in browser `localStorage` with keys like `vape_products`, `vape_transactions`, `vape_customers`, `vape_settings`. No backend/API in this repo.
 
-- [x] Install Required Extensions
-	<!-- No extensions required for this HTML/CSS/JavaScript project -->
+### Key Entry Points
+- **UI**: `index.html` — single HTML file, all pages rendered by toggling `.page.active` class
+- **Core JS**: `js/app.js` — main `VapeTracker` class orchestrates app lifecycle, loads/saves data
+- **Modular features**: Each `js/*.js` file exports a class (e.g., `InventoryManager`, `SalesManager`, `NexaQuantumLicenseManager`) attached to `window` for script-tag loading
+- **Script load order** (see bottom of `index.html`): licensing/payments → app → features → enhancements (order matters for dependencies)
+- **Styles**: `css/styles.css` — single monolithic stylesheet, mobile-first responsive design
 
-- [x] Compile the Project
-	<!-- No compilation needed - ready to run in browser -->
+### Module Communication Pattern
+Classes reference each other via global scope after instantiation:
+```javascript
+// js/app.js creates main instance
+const app = new VapeTracker();
 
-- [x] Create and Run Task
-	<!-- No tasks needed for this static HTML/JavaScript project - can be opened directly in browser -->
+// Other modules reference it
+class InventoryManager {
+    constructor(app) { this.app = app; } // receives VapeTracker instance
+}
+// Instantiated in app.js: this.inventoryManager = new InventoryManager(this);
+```
+When adding features: create class in new `js/feature.js`, add `<script>` tag to `index.html`, instantiate in `VapeTracker.init()`.
 
-- [x] Launch the Project
-	<!-- Project is ready to launch - simply open index.html in a web browser -->
+### Data Schema (localStorage JSON shapes)
+All stored as JSON strings. Always use defensive parsing:
+```javascript
+const products = JSON.parse(localStorage.getItem('vape_products') || '[]');
+```
+- **`vape_products`**: `[{ id, name, category, sku, barcode?, price, stock, description?, image? }]`
+- **`vape_transactions`**: `[{ id, type, date, items: [{ product, quantity, price }], total, paymentMethod, customerId? }]`
+- **`vape_customers`**: `[{ id, name, email?, phone?, purchaseHistory: [] }]`
+- **`vape_settings`**: `{ taxRate, currency, lowStockThreshold, ... }`
+- **`nexaquantum_license`**: `{ key, type, expiration, ... }` — managed by `js/nexaquantum-licensing.js`
 
-- [x] Ensure Documentation is Complete
-	<!-- README.md created with comprehensive documentation and setup instructions -->
+Changes to schemas: update both `app.js` initial shapes AND `data-manager.js` import/export logic.
 
----
+## Development Workflow
 
-# Workspace guidance for AI coding agents
+### Local Development (Windows PowerShell)
+```powershell
+# Start dev server (REQUIRED for testing — double-click index.html breaks CORS for PWA assets)
+npm run dev    # or: npx http-server -p 8080
+# Open http://localhost:8080 in browser
+```
 
-Purpose: help an AI agent be immediately productive in this repository (NexaQuantum El Duro Vaper POS — static web + Cordova packaging).
+### Cordova Native Builds
+```powershell
+# Android
+npm run build-android       # or: .\build-android.bat
+# iOS (requires macOS + Xcode)
+npm run build-ios           # or: ./build-ios.sh
+```
+**Critical**: When modifying Cordova plugin usage (camera/scanner/printer), test builds—browser simulation won't catch native API issues. Plugins configured in `package.json` `cordova.plugins` and `config.xml`.
 
-Keep instructions concise and factual. Use the repository files to ground suggestions and edits.
+### Testing Strategy
+**No automated tests exist**. Manual verification checklist:
+1. Open in `http-server`, check console for errors
+2. Test feature across: Dashboard → Inventory → Sales → Reports flow
+3. Verify localStorage persistence: refresh page, data should survive
+4. Mobile: use Chrome DevTools mobile emulation, check touch targets (min 44x44px)
+5. PWA: test offline mode after first load (service worker in `sw.js`)
 
-- Project entry points:
-	- UI: `index.html` (single-page app). JavaScript lives under `js/` (notably `app.js`, `dashboard.js`, `inventory.js`, `sales.js`, `vape-specific-features.js`). Styles: `css/styles.css`.
-	- Packaging / native builds: `package.json` scripts (uses `cordova`) and platform scripts/batch files like `build-android.bat`, `build-ios.sh`, `build-mobile.*`, `build-windows.bat`.
+## Code Conventions & Anti-Patterns
 
-- Data & runtime conventions:
-	- App is client-side, stores data in browser Local Storage (see `README.md` and `js/data-manager.js`). Treat local JSON shapes as the source of truth (products, transactions, customers, settings).
-	- No server API code in this repo. Avoid adding server-side patterns unless user requests sync/cloud features.
+### ✅ DO
+- Defensive localStorage reads: `JSON.parse(localStorage.getItem('key') || '[]')`
+- Add features as modular classes in `js/new-feature.js`, register in `app.js`
+- Use existing DOM manipulation patterns (vanilla `.querySelector`, `.innerHTML`, event listeners)
+- Preserve mobile-first responsive CSS — check `@media` queries in `styles.css`
+- Update `sw.js` cache version when changing JS/CSS files
 
-- Common tasks & commands (Windows PowerShell context):
-	- Local dev static server: `npx http-server -p 8080` or `npm run dev` (requires `http-server` in `devDependencies`).
-	- Cordova builds: `npm run build-android` / `npm run build-ios` or use provided batch/shell scripts.
+### ❌ DON'T
+- Add server-side code (Express, API routes) unless user explicitly requests cloud sync
+- Introduce build tools (Webpack, Babel) — keep it runnable by opening `index.html`
+- Use jQuery/Lodash — all logic is vanilla JS
+- Break script loading order — licensing/payments must load before `app.js`
+- Modify localStorage keys without updating all read/write callsites (grep `vape_products` etc.)
 
-- Code conventions & patterns to follow when changing code:
-	- Keep behavior client-side and resilient to missing Local Storage entries; prefer defensive checks around `localStorage.getItem`.
-	- UI is vanilla JS — prefer minimal changes that use existing modules under `js/`. Add new features as small modules and register them from `app.js` when appropriate.
-	- Search for feature touchpoints by name (e.g., `processSale`, `saveProduct`, `renderDashboard`) across `js/` files.
+### Specific Patterns to Follow
+**Adding a product category**: Update `js/vape-specific-features.js` product categories array AND `js/inventory.js` category filter dropdowns.  
+**Processing a sale**: Flow is `js/sales.js` → `SalesManager.processSale()` → updates `app.transactions` → saves to localStorage → triggers `js/dashboard.js` stats refresh.  
+**Barcode scanning**: Uses `cordova-plugin-barcodescanner` (mobile) or `@zxing/browser` (web). See `js/hardware-integration.js` `BarcodeScanner` class for abstraction.
 
-- Integration points and external dependencies:
-	- Cordova plugins listed in `package.json` (`cordova-plugin-camera`, `cordova-plugin-file`, `cordova-plugin-barcodescanner`, etc.). When adding native features, update `package.json` `cordova.plugins` and test with platform builds.
-	- Store assets and platform metadata live in `store-assets/` and `res/` — changes here affect app store packaging and icons.
+## Integration Points
 
-- Tests & linting:
-	- There are no automated tests in the repository. If you add tests, prefer a lightweight test runner (Jest or Mocha) and add npm scripts for them.
+### External Dependencies
+- **CDN**: Font Awesome 6, ZXing barcode library (loaded in `index.html` `<head>`)
+- **Cordova plugins** (native mobile only): camera, file system, barcode scanner, receipt printer, in-app purchases. See `package.json` `cordova.plugins`. 
+- **PWA**: Service worker (`sw.js`) caches assets for offline use. Update `CACHE_NAME` and `urlsToCache` when adding files.
 
-- Safety checks for PRs the agent should do automatically:
-	- Run a quick smoke: open `index.html` locally via `http-server` and verify console has no obvious runtime errors after the change.
-	- Preserve UX on small screens — the app is mobile-first; check `css/styles.css` when modifying layout.
+### Store Deployment Assets
+- **`store-assets/`**: App store listing text, screenshots, policies (iOS/Android/PWA/Windows)
+- **`res/icon/` & `images/`**: App icons for all platforms. Regenerate with `generate-icons.ps1` / `generate-square-icons.ps1` if branding changes.
+- **`config.xml`**: Cordova config — package name, version, permissions. Changes here require rebuild.
 
-- When making edits, reference exact files in commit messages and PR descriptions. Example: "Fix stock-adjustment bug in `js/inventory.js` — guard missing `product.stock`".
+### Multi-Platform Considerations
+- **Browser/PWA**: Full functionality, uses web APIs for camera/file access
+- **Android**: Uses Cordova plugins, test builds on API 22+ (min SDK)
+- **iOS**: Requires macOS, test on iOS 13+ devices
+- **Licensing**: `js/nexaquantum-licensing.js` detects platform via `window.cordova` / `window.device`, integrates app store in-app purchases (`cordova-plugin-purchase`) or direct license keys.
 
-If anything here is unclear or you'd like more rules (naming, testing setup, CI), tell me which area to expand and I will update this file.
+## Debugging & Common Issues
+
+### "Data not persisting"
+Check localStorage quota (5-10MB limit). Export/clear old transactions in Data Manager page.
+
+### "Barcode scanner not working"
+- Web: Requires HTTPS or localhost (camera permissions)
+- Mobile: Check `config.xml` has `<uses-permission android:name="android.permission.CAMERA" />`
+
+### "PWA not updating"
+Service worker caches aggressively. Increment `CACHE_NAME` in `sw.js` and hard-refresh (Ctrl+Shift+R).
+
+### "Module not defined"
+Script load order issue. Check `index.html` `<script>` tags load dependencies before dependents.
+
+## Making Changes
+
+### Adding a New Feature
+1. Create `js/my-feature.js` with ES6 class: `class MyFeature { constructor(app) {...} }`
+2. Add `<script src="js/my-feature.js"></script>` to `index.html` (after dependencies, before closing `</body>`)
+3. Instantiate in `js/app.js` `init()`: `this.myFeature = new MyFeature(this);`
+4. Add UI in `index.html` as new `.page` div with unique ID
+5. Wire nav link: add `<li class="nav-item"><a data-page="my-feature">...</a></li>`
+6. Update `sw.js` cache: add `/js/my-feature.js` to `urlsToCache`
+
+### Modifying Data Schema
+1. Update initial shape in `js/app.js` `getSampleProducts()` / default settings
+2. Update `js/data-manager.js` export/import functions
+3. Add migration logic if changing existing fields (check for old data, transform on load)
+
+### Commit Message Format
+Use exact file paths: "Fix stock validation in `js/inventory.js` — prevent negative quantities" (NOT "fixed inventory bug")
+
+## Android Deployment (Current Status)
+
+**Active deployment via PWABuilder**: App is being packaged at https://www.pwabuilder.com/
+- PWA Score: 35/44 (sufficient for packaging)
+- Manifest URL: nexaquantumvape.com/manifest.json
+- Package ID: `com.nexaquantum.vape.pos`
+- Target: Google Play Store
+
+**Deployment files ready**:
+- `.well-known/assetlinks.json` — Link app to website (update fingerprint from PWABuilder)
+- `START-HERE-PWABUILDER.md` — Immediate next steps guide
+- `PWABUILDER-ANDROID-GUIDE.md` — Complete packaging & Play Store guide
+- `ANDROID-DEPLOYMENT-CHECKLIST.md` — Progress tracker
+
+**When user gets .aab file from PWABuilder**:
+1. Save to `android-release/` folder
+2. Backup signing keystore (critical for updates!)
+3. Upload assetlinks.json to website `.well-known/` directory
+4. Upload .aab to Play Console (https://play.google.com/console)
+
+## Further Reading
+- `README.md` — setup, features, quick start guide
+- `START-HERE-PWABUILDER.md` — **Current Android deployment status**
+- `PWABUILDER-ANDROID-GUIDE.md` — Complete Play Store submission
+- `DEPLOYMENT-GUIDE.md` — Multi-platform deployment overview
+- `store-assets/pwa/pwa-deployment-guide.md` — PWA publishing steps
