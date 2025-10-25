@@ -1,7 +1,7 @@
 // Service Worker for NexaQuantum POS PWA
 // Enables offline functionality and app-like experience
 
-const CACHE_NAME = 'nexaquantum-pos-v1.3.1';
+const CACHE_NAME = 'nexaquantum-pos-v1.3.2';
 const urlsToCache = [
   '/vape-tracker/',
   '/vape-tracker/index.html',
@@ -29,7 +29,6 @@ const urlsToCache = [
   '/vape-tracker/images/icon-192.png',
   '/vape-tracker/images/icon-512.png'
 ];
-];
 
 // Install Service Worker
 self.addEventListener('install', function(event) {
@@ -42,6 +41,8 @@ self.addEventListener('install', function(event) {
         return cache.addAll(urlsToCache);
       })
   );
+  // Force activation
+  self.skipWaiting();
 });
 
 // Fetch events - serve from cache when offline
@@ -74,7 +75,7 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
-// Activate Service Worker - clean up old caches
+// Activate Service Worker - clean up old caches and claim clients
 self.addEventListener('activate', function(event) {
   console.log('NexaQuantum POS Service Worker activating...');
   
@@ -88,6 +89,9 @@ self.addEventListener('activate', function(event) {
           }
         })
       );
+    }).then(function() {
+      // Take control of all clients immediately
+      return self.clients.claim();
     })
   );
 });
