@@ -14,28 +14,14 @@ class NexaQuantumLicenseManager {
     }
     
     init() {
-        // FREE VERSION - Auto-activate with full access
-        this.isLicensed = true;
-        this.licenseType = 'lifetime';
-        this.subscriptionStatus = 'active';
-        this.expirationDate = new Date('2099-12-31');
-        
-        // Grant free lifetime license
-        const freeLicense = {
-            key: 'FREE-FULL-ACCESS',
-            type: 'lifetime',
-            expiration: '2099-12-31',
-            activatedDate: new Date().toISOString(),
-            features: 'all'
-        };
-        localStorage.setItem('nexaquantum_license', JSON.stringify(freeLicense));
-        
-        // Still create UI elements but hide payment prompts
+        // 30-DAY FREE TRIAL VERSION - Then $29.99/month
+        this.loadLicenseData();
+        this.setupLicenseValidation();
         this.createLicenseStatus();
         this.addLicenseStyles();
         
-        console.log('✅ NexaQuantum POS - FREE FULL ACCESS VERSION');
-        console.log('🎉 All features unlocked - No payment required!');
+        console.log('✅ NexaQuantum POS - 30-Day FREE Trial');
+        console.log('💰 After trial: $29.99/month or $299.99/year');
     }
     
     // Platform Detection
@@ -68,37 +54,82 @@ class NexaQuantumLicenseManager {
                 console.error('Error loading license data:', error);
                 this.clearLicenseData();
             }
+        } else {
+            // New user - start 30-day free trial
+            this.startFreeTrial();
         }
+    }
+    
+    startFreeTrial() {
+        const trialStart = new Date();
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 30); // 30-day trial
+        
+        const trialLicense = {
+            key: 'TRIAL-30-DAYS',
+            type: 'trial',
+            expiration: trialEnd.toISOString(),
+            activatedDate: trialStart.toISOString(),
+            features: 'all',
+            trialDays: 30
+        };
+        
+        localStorage.setItem('nexaquantum_license', JSON.stringify(trialLicense));
+        
+        this.licenseKey = trialLicense.key;
+        this.licenseType = 'trial';
+        this.expirationDate = trialEnd;
+        this.isLicensed = true;
+        this.subscriptionStatus = 'trial';
+        
+        console.log('🎉 30-Day FREE Trial Started!');
+        console.log(`Trial expires: ${trialEnd.toLocaleDateString()}`);
     }
     
     // Validate current license
     validateCurrentLicense() {
-        // FREE VERSION - Full access for everyone, no restrictions
-        this.isLicensed = true;
-        this.licenseType = 'lifetime';
-        this.subscriptionStatus = 'active';
-        this.expirationDate = new Date('2099-12-31'); // Never expires
+        const now = new Date();
         
-        // Save free license to localStorage
-        const freeLicense = {
-            key: 'FREE-FULL-ACCESS',
-            type: 'lifetime',
-            expiration: '2099-12-31',
-            activatedDate: new Date().toISOString(),
-            features: 'all'
-        };
-        localStorage.setItem('nexaquantum_license', JSON.stringify(freeLicense));
+        // Check if it's a lifetime/paid license
+        if (this.licenseType === 'lifetime' || this.licenseType === 'subscription') {
+            this.isLicensed = true;
+            this.subscriptionStatus = 'active';
+            return true;
+        }
         
-        return true;
+        // Check trial period
+        if (this.licenseType === 'trial') {
+            if (now < this.expirationDate) {
+                this.isLicensed = true;
+                this.subscriptionStatus = 'trial';
+                return true;
+            } else {
+                // Trial expired
+                this.isLicensed = false;
+                this.subscriptionStatus = 'expired';
+                return false;
+            }
+        }
+        
+        // Check if any paid subscription is still valid
+        if (this.expirationDate && now < this.expirationDate) {
+            this.isLicensed = true;
+            this.subscriptionStatus = 'active';
+            return true;
+        }
+        
+        // Default: not licensed
+        this.isLicensed = false;
+        this.subscriptionStatus = 'expired';
+        return false;
     }
     
     // Create License UI
     createLicenseUI() {
-        // FREE VERSION - No payment modals needed
+        this.createLicenseModal();
+        this.createSubscriptionPlans();
         this.createLicenseStatus();
         this.addLicenseStyles();
-        // Payment modals and subscription plans are disabled
-        console.log('License UI: FREE VERSION - No payment required');
     }
     
     createLicenseModal() {
@@ -122,11 +153,12 @@ class NexaQuantumLicenseManager {
                 <!-- Subscription Plans -->
                 <div class="license-content" id="subscription-content">
                     <h3>🚀 Choose Your Plan</h3>
+                    <p class="trial-notice">✨ Currently in 30-Day FREE Trial - Full access to all features!</p>
                     <div class="subscription-plans">
                         <div class="plan-card popular">
                             <div class="plan-badge">Most Popular</div>
                             <h4>Professional Monthly</h4>
-                            <div class="plan-price">$39.99<span>/month</span></div>
+                            <div class="plan-price">$29.99<span>/month</span></div>
                             <ul class="plan-features">
                                 <li>✅ Full POS functionality</li>
                                 <li>✅ Up to 5 stores</li>
@@ -135,38 +167,46 @@ class NexaQuantumLicenseManager {
                                 <li>✅ Priority support</li>
                                 <li>✅ Regular updates</li>
                             </ul>
-                            <button class="plan-button" onclick="nexaLicense.subscribeToPlan('monthly', 39.99)">
+                            <button class="plan-button" onclick="nexaLicense.subscribeToPlan('monthly', 29.99)">
                                 Subscribe Monthly
                             </button>
                         </div>
                         
                         <div class="plan-card savings">
-                            <div class="plan-badge savings-badge">Save 20%</div>
+                            <div class="plan-badge savings-badge">Save $60/year</div>
                             <h4>Professional Yearly</h4>
-                            <div class="plan-price">$399.99<span>/year</span></div>
-                            <div class="plan-savings">Save $79.99 per year</div>
+                            <div class="plan-price">$299.99<span>/year</span></div>
+                            <div class="plan-savings">2 months FREE - Only $24.99/month</div>
                             <ul class="plan-features">
                                 <li>✅ Everything in Monthly</li>
-                                <li>✅ 2 months FREE</li>
+                                <li>✅ 2 months FREE ($60 savings)</li>
                                 <li>✅ Priority feature requests</li>
                                 <li>✅ Dedicated account manager</li>
                                 <li>✅ Advanced analytics</li>
                                 <li>✅ Custom integrations</li>
                             </ul>
-                            <button class="plan-button yearly" onclick="nexaLicense.subscribeToPlan('yearly', 399.99)">
+                            <button class="plan-button yearly" onclick="nexaLicense.subscribeToPlan('yearly', 299.99)">
                                 Subscribe Yearly
                             </button>
                         </div>
                         
                         <div class="plan-card enterprise">
                             <h4>Enterprise</h4>
-                            <div class="plan-price">$999.99<span>/year</span></div>
+                            <div class="plan-price">$499.99<span>/year</span></div>
                             <ul class="plan-features">
                                 <li>✅ Unlimited stores</li>
                                 <li>✅ White-label options</li>
                                 <li>✅ API access</li>
                                 <li>✅ Custom development</li>
                                 <li>✅ 24/7 phone support</li>
+                                <li>✅ On-site training</li>
+                            </ul>
+                            <button class="plan-button enterprise" onclick="nexaLicense.contactSales()">
+                                Contact Sales
+                            </button>
+                        </div>
+                    </div>
+                </div>
                                 <li>✅ On-site training</li>
                             </ul>
                             <button class="plan-button enterprise" onclick="nexaLicense.contactSales()">
@@ -271,13 +311,46 @@ class NexaQuantumLicenseManager {
         const statusElement = document.getElementById('license-status');
         if (!statusElement) return;
         
-        // FREE VERSION - Show free/licensed status
-        statusElement.innerHTML = `
-            <div class="license-status-content licensed">
-                <span class="license-status-text">🎉 FREE - Full Access</span>
-                <span class="license-type-badge">No License Required</span>
-            </div>
-        `;
+        if (this.isLicensed) {
+            const daysUntilExpiry = this.getDaysUntilExpiry();
+            let statusText = '';
+            let statusClass = 'licensed';
+            
+            if (this.licenseType === 'trial') {
+                statusText = `🎁 FREE Trial - ${daysUntilExpiry} days left`;
+                statusClass = daysUntilExpiry <= 7 ? 'expiring-critical' : 'trial';
+            } else if (this.licenseType === 'lifetime' || this.licenseType === 'subscription') {
+                statusText = '✅ Licensed';
+                statusClass = 'licensed';
+            } else if (daysUntilExpiry > 30) {
+                statusText = '✅ Licensed';
+                statusClass = 'licensed';
+            } else if (daysUntilExpiry > 7) {
+                statusText = `⚠️ Renews in ${daysUntilExpiry} days`;
+                statusClass = 'expiring-soon';
+            } else if (daysUntilExpiry > 0) {
+                statusText = `⚠️ Renews in ${daysUntilExpiry} days`;
+                statusClass = 'expiring-critical';
+            }
+            
+            statusElement.innerHTML = `
+                <div class="license-status-content ${statusClass}">
+                    <span class="license-status-text">${statusText}</span>
+                    <button class="license-manage-btn" onclick="nexaLicense.showLicenseModal()">
+                        ${this.licenseType === 'trial' ? 'Subscribe' : 'Manage'}
+                    </button>
+                </div>
+            `;
+        } else {
+            statusElement.innerHTML = `
+                <div class="license-status-content unlicensed">
+                    <span class="license-status-text">❌ Trial Expired</span>
+                    <button class="license-upgrade-btn" onclick="nexaLicense.showLicenseModal()">
+                        Subscribe Now
+                    </button>
+                </div>
+            `;
+        }
     }
     
     // App Store Integration
