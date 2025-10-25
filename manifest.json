@@ -1,7 +1,7 @@
 {
-  "id": "com.nexaquantum.elduro.vaper.pos",
-  "name": "NexaQuantum El Duro Vaper POS",
-  "short_name": "NexaQuantum POS",
+  "id": "com.nexaquantum.vape.pos",
+  "name": "NexaQuantum Vape",
+  "short_name": "NexaQuantum",
   "description": "Professional Point of Sale system for vape retailers",
   "start_url": "/vape-tracker/",
   "display": "standalone",
