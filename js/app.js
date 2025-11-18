@@ -561,10 +561,13 @@ class VapeTracker {
 document.addEventListener('DOMContentLoaded', () => {
     window.vapeTracker = new VapeTracker();
     
-    // Apply initial translations
-    if (window.i18n) {
-        window.i18n.translatePage();
-    }
+    // Apply initial translations after a short delay to ensure DOM is fully ready
+    setTimeout(() => {
+        if (window.i18n) {
+            console.log('Applying initial translations, current language:', window.i18n.getLanguage());
+            window.i18n.translatePage();
+        }
+    }, 100);
     
     // Setup language switcher
     const languageSelect = document.getElementById('app-language');
@@ -574,6 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Listen for language changes
         languageSelect.addEventListener('change', (e) => {
+            console.log('Language changed to:', e.target.value);
             window.i18n.setLanguage(e.target.value);
         });
     }

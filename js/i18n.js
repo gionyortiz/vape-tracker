@@ -257,6 +257,8 @@ class I18n {
     // Translate all elements with data-i18n attribute
     translatePage() {
         const elements = document.querySelectorAll('[data-i18n]');
+        console.log(`Translating ${elements.length} elements to ${this.currentLanguage}`);
+        
         elements.forEach(element => {
             const key = element.getAttribute('data-i18n');
             const translation = this.t(key);
@@ -269,7 +271,7 @@ class I18n {
                 // Find and replace text nodes only
                 Array.from(element.childNodes).forEach(node => {
                     if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-                        node.textContent = translation;
+                        node.textContent = ' ' + translation;
                     }
                 });
             }
