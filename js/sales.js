@@ -258,9 +258,19 @@ class SalesManager {
         // Save transaction
         this.app.transactions.push(transaction);
         this.app.saveData();
+        
+        // Add loyalty points if customer is attached
+        let loyaltyInfo = null;
+        if (this.currentCustomer && this.app.loyaltyManager) {
+            loyaltyInfo = this.app.loyaltyManager.addPoints(
+                this.currentCustomer.id, 
+                total, 
+                transaction.id
+            );
+        }
 
-        // Show receipt
-        this.showReceipt(transaction);
+        // Show receipt with loyalty info
+        this.showReceipt(transaction, loyaltyInfo);
 
         // Clear cart and refresh displays
         this.clearCart();
@@ -269,10 +279,15 @@ class SalesManager {
 
         this.isProcessingSale = false;
 
-        alert('Sale completed successfully!');
+        // Show success with loyalty info
+        if (loyaltyInfo) {
+            alert(`Sale completed successfully!\n\n🎉 ${this.currentCustomer.name} earned ${loyaltyInfo.pointsEarned} loyalty points!\nNew balance: ${loyaltyInfo.newBalance} points`);
+        } else {
+            alert('Sale completed successfully!');
+        }
     }
 
-    showReceipt(transaction) {
+    showReceipt(transaction, loyaltyInfo = null) {
         const receiptWindow = window.open('', '_blank', 'width=400,height=600');
         
         const receiptHTML = `
@@ -333,6 +348,31 @@ class SalesManager {
                     <span>Payment Method:</span>
                     <span>${transaction.paymentMethod.toUpperCase()}</span>
                 </div>
+                
+                ${loyaltyInfo ? `
+                <div class="line"></div>
+                
+                <div style="background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <p class="center" style="margin: 0 0 10px 0; font-weight: bold;">🎉 LOYALTY REWARDS</p>
+                    <div class="item">
+                        <span>Points Earned:</span>
+                        <span>${loyaltyInfo.pointsEarned}</span>
+                    </div>
+                    ${loyaltyInfo.bonusPoints > 0 ? `
+                    <div class="item" style="color: #28a745;">
+                        <span>Tier Bonus:</span>
+                        <span>+${loyaltyInfo.bonusPoints}</span>
+                    </div>
+                    ` : ''}
+                    <div class="item" style="font-weight: bold;">
+                        <span>New Balance:</span>
+                        <span>${loyaltyInfo.newBalance} pts</span>
+                    </div>
+                    <p class="center" style="margin: 10px 0 0 0; font-size: 0.9em;">
+                        ${loyaltyInfo.tier.toUpperCase()} Member - Keep earning!
+                    </p>
+                </div>
+                ` : ''}
                 
                 <div class="line"></div>
                 

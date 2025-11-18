@@ -17,12 +17,28 @@ class VapeTracker {
 
     init() {
         this.loadData();
+        this.initializeManagers();
         this.setupEventListeners();
         this.updateDateTime();
         this.showPage('dashboard');
         
         // Update datetime every minute
         setInterval(() => this.updateDateTime(), 60000);
+        
+        // Check for birthday rewards daily
+        setInterval(() => this.loyaltyManager.checkBirthdayRewards(), 24 * 60 * 60 * 1000);
+    }
+    
+    initializeManagers() {
+        // Initialize customer loyalty system
+        if (window.CustomerLoyaltyManager) {
+            this.loyaltyManager = new CustomerLoyaltyManager(this);
+        }
+        
+        // Initialize CRM system
+        if (window.CustomerCRMManager) {
+            this.customerCRM = new CustomerCRMManager(this);
+        }
     }
 
     loadData() {
@@ -470,6 +486,20 @@ class VapeTracker {
             }
         };
         reader.readAsText(file);
+    }
+    
+    loadCustomers() {
+        if (this.customerCRM) {
+            this.customerCRM.renderCustomersPage();
+            this.customerCRM.loadCustomerList();
+        }
+    }
+    
+    formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: this.settings.currency || 'USD'
+        }).format(amount);
     }
 }
 
