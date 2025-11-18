@@ -226,6 +226,14 @@ class VapeTracker {
                 this.simulateBarcodeScan();
             });
         });
+        
+        // Save settings button
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        if (saveSettingsBtn) {
+            saveSettingsBtn.addEventListener('click', () => {
+                this.saveSettings();
+            });
+        }
     }
 
     showPage(pageName) {
@@ -500,6 +508,42 @@ class VapeTracker {
             style: 'currency',
             currency: this.settings.currency || 'USD'
         }).format(amount);
+    }
+    
+    loadSettings() {
+        // Load settings into form fields
+        const storeNameInput = document.getElementById('store-name');
+        const taxRateInput = document.getElementById('tax-rate');
+        const currencySelect = document.getElementById('currency');
+        const lowStockInput = document.getElementById('low-stock-threshold');
+        
+        if (storeNameInput) storeNameInput.value = this.settings.storeName || 'My Vape Store';
+        if (taxRateInput) taxRateInput.value = (this.settings.taxRate * 100) || 8.25;
+        if (currencySelect) currencySelect.value = this.settings.currency || 'USD';
+        if (lowStockInput) lowStockInput.value = this.settings.lowStockThreshold || 10;
+    }
+    
+    saveSettings() {
+        // Get values from form fields
+        const storeNameInput = document.getElementById('store-name');
+        const taxRateInput = document.getElementById('tax-rate');
+        const currencySelect = document.getElementById('currency');
+        const lowStockInput = document.getElementById('low-stock-threshold');
+        
+        // Update settings object
+        if (storeNameInput) this.settings.storeName = storeNameInput.value;
+        if (taxRateInput) this.settings.taxRate = parseFloat(taxRateInput.value) / 100;
+        if (currencySelect) this.settings.currency = currencySelect.value;
+        if (lowStockInput) this.settings.lowStockThreshold = parseInt(lowStockInput.value);
+        
+        // Save to localStorage
+        this.saveData();
+        
+        // Show success message
+        alert('Settings saved successfully!');
+        
+        // Refresh current page to reflect changes
+        this.loadPageContent(this.currentPage);
     }
 }
 
