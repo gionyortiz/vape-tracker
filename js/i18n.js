@@ -203,17 +203,22 @@ class I18n {
     loadLanguage() {
         // Try localStorage first
         const saved = localStorage.getItem('app_language');
+        console.log('loadLanguage: localStorage app_language =', saved);
         if (saved && (saved === 'en' || saved === 'es')) {
+            console.log('loadLanguage: Returning saved language:', saved);
             return saved;
         }
         
         // Try browser language
         const browserLang = navigator.language || navigator.userLanguage;
+        console.log('loadLanguage: Browser language =', browserLang);
         if (browserLang.startsWith('es')) {
+            console.log('loadLanguage: Returning browser language: es');
             return 'es';
         }
         
         // Default to English
+        console.log('loadLanguage: Defaulting to English');
         return 'en';
     }
     
