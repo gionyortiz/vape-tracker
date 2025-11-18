@@ -559,15 +559,21 @@ class VapeTracker {
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply translations IMMEDIATELY before anything else
+    if (window.i18n) {
+        console.log('PRE-INIT: Applying translations, current language:', window.i18n.getLanguage());
+        window.i18n.translatePage();
+    }
+    
     window.vapeTracker = new VapeTracker();
     
-    // Apply initial translations after a short delay to ensure DOM is fully ready
+    // Apply translations again after app initializes
     setTimeout(() => {
         if (window.i18n) {
-            console.log('Applying initial translations, current language:', window.i18n.getLanguage());
+            console.log('POST-INIT: Re-applying translations, current language:', window.i18n.getLanguage());
             window.i18n.translatePage();
         }
-    }, 100);
+    }, 200);
     
     // Setup language switcher
     const languageSelect = document.getElementById('app-language');
