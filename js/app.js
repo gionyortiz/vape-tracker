@@ -285,6 +285,11 @@ class VapeTracker {
                 this.loadSettings();
                 break;
         }
+        
+        // Apply translations after loading page content
+        if (window.i18n) {
+            window.i18n.translatePage();
+        }
     }
 
     updateDateTime() {
@@ -555,6 +560,11 @@ class VapeTracker {
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.vapeTracker = new VapeTracker();
+    
+    // Apply initial translations
+    if (window.i18n) {
+        window.i18n.translatePage();
+    }
     
     // Setup language switcher
     const languageSelect = document.getElementById('app-language');
