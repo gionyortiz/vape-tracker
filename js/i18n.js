@@ -45,11 +45,21 @@ const translations = {
         
         // Settings
         'settings.title': 'Settings',
-        'settings.language': 'Language',
+        'settings.systemSettings': 'System Settings',
+        'settings.saveSettings': 'Save Settings',
+        'settings.general': 'General',
+        'settings.posSettings': 'POS Settings',
+        'settings.hardware': 'Hardware',
+        'settings.integrations': 'Integrations',
+        'settings.security': 'Security',
+        'settings.generalSettings': 'General Settings',
+        'settings.language': 'Language / Idioma',
         'settings.currency': 'Currency',
-        'settings.taxRate': 'Tax Rate',
+        'settings.taxRate': 'Tax Rate (%)',
         'settings.storeName': 'Store Name',
+        'settings.lowStockThreshold': 'Low Stock Threshold',
         'settings.save': 'Save Settings',
+        'settings.saved': 'Settings saved successfully!',
         
         // Common
         'common.search': 'Search',
@@ -126,11 +136,21 @@ const translations = {
         
         // Configuración
         'settings.title': 'Configuración',
-        'settings.language': 'Idioma',
+        'settings.systemSettings': 'Configuración del Sistema',
+        'settings.saveSettings': 'Guardar Configuración',
+        'settings.general': 'General',
+        'settings.posSettings': 'Configuración POS',
+        'settings.hardware': 'Hardware',
+        'settings.integrations': 'Integraciones',
+        'settings.security': 'Seguridad',
+        'settings.generalSettings': 'Configuración General',
+        'settings.language': 'Idioma / Idioma',
         'settings.currency': 'Moneda',
-        'settings.taxRate': 'Tasa de Impuesto',
+        'settings.taxRate': 'Tasa de Impuesto (%)',
         'settings.storeName': 'Nombre de la Tienda',
+        'settings.lowStockThreshold': 'Umbral de Bajo Stock',
         'settings.save': 'Guardar Configuración',
+        'settings.saved': 'Configuración guardada exitosamente!',
         
         // Común
         'common.search': 'Buscar',
@@ -239,7 +259,20 @@ class I18n {
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(element => {
             const key = element.getAttribute('data-i18n');
-            element.textContent = this.t(key);
+            const translation = this.t(key);
+            
+            // If element has only text (no child elements), replace textContent
+            // Otherwise, replace just the text nodes to preserve child elements like icons
+            if (element.children.length === 0) {
+                element.textContent = translation;
+            } else {
+                // Find and replace text nodes only
+                Array.from(element.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                        node.textContent = translation;
+                    }
+                });
+            }
         });
         
         // Translate placeholders

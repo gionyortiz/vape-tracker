@@ -521,6 +521,11 @@ class VapeTracker {
         if (taxRateInput) taxRateInput.value = (this.settings.taxRate * 100) || 8.25;
         if (currencySelect) currencySelect.value = this.settings.currency || 'USD';
         if (lowStockInput) lowStockInput.value = this.settings.lowStockThreshold || 10;
+        
+        // Apply translations to the settings page
+        if (window.i18n) {
+            window.i18n.translatePage();
+        }
     }
     
     saveSettings() {
@@ -540,7 +545,7 @@ class VapeTracker {
         this.saveData();
         
         // Show success message
-        alert('Settings saved successfully!');
+        alert(window.i18n ? window.i18n.t('settings.saved') : 'Settings saved successfully!');
         
         // Refresh current page to reflect changes
         this.loadPageContent(this.currentPage);

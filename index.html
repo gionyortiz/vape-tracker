@@ -614,40 +614,40 @@
         <!-- Enhanced Settings Page -->
         <div id="settings-page" class="page">
             <div class="page-header">
-                <h1><i class="fas fa-cog"></i> System Settings</h1>
+                <h1><i class="fas fa-cog"></i> <span data-i18n="settings.systemSettings">System Settings</span></h1>
                 <button class="btn-primary" id="save-settings-btn">
-                    <i class="fas fa-save"></i> Save Settings
+                    <i class="fas fa-save"></i> <span data-i18n="settings.saveSettings">Save Settings</span>
                 </button>
             </div>
             
             <div class="settings-tabs">
                 <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="general">General</button>
-                    <button class="tab-btn" data-tab="pos">POS Settings</button>
-                    <button class="tab-btn" data-tab="hardware">Hardware</button>
-                    <button class="tab-btn" data-tab="integrations">Integrations</button>
-                    <button class="tab-btn" data-tab="security">Security</button>
+                    <button class="tab-btn active" data-tab="general" data-i18n="settings.general">General</button>
+                    <button class="tab-btn" data-tab="pos" data-i18n="settings.posSettings">POS Settings</button>
+                    <button class="tab-btn" data-tab="hardware" data-i18n="settings.hardware">Hardware</button>
+                    <button class="tab-btn" data-tab="integrations" data-i18n="settings.integrations">Integrations</button>
+                    <button class="tab-btn" data-tab="security" data-i18n="settings.security">Security</button>
                 </div>
                 
                 <div class="tab-content active" id="general-tab">
-                    <h3>General Settings</h3>
+                    <h3 data-i18n="settings.generalSettings">General Settings</h3>
                     <div class="form-group">
-                        <label>Store Name</label>
+                        <label data-i18n="settings.storeName">Store Name</label>
                         <input type="text" id="store-name" value="My Vape Store">
                     </div>
                     <div class="form-group">
-                        <label>Language / Idioma</label>
+                        <label data-i18n="settings.language">Language / Idioma</label>
                         <select id="app-language">
                             <option value="en">English</option>
                             <option value="es">Español</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Tax Rate (%)</label>
+                        <label data-i18n="settings.taxRate">Tax Rate (%)</label>
                         <input type="number" id="tax-rate" step="0.01" value="8.25">
                     </div>
                     <div class="form-group">
-                        <label>Currency</label>
+                        <label data-i18n="settings.currency">Currency</label>
                         <select id="currency">
                             <option value="USD">USD - US Dollar</option>
                             <option value="EUR">EUR - Euro</option>
@@ -655,7 +655,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Low Stock Threshold</label>
+                        <label data-i18n="settings.lowStockThreshold">Low Stock Threshold</label>
                         <input type="number" id="low-stock-threshold" value="10">
                     </div>
                 </div>
