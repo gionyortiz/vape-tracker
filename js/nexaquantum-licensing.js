@@ -9,7 +9,15 @@ class NexaQuantumLicenseManager {
         this.licenseKey = null;
         this.subscriptionStatus = 'inactive';
         this.platform = this.detectPlatform();
-        
+
+        // Stripe Payment Links — replace with your live URLs from the Stripe dashboard.
+        // Currently only one product is live: Professional Monthly $39.99/mo.
+        this.stripeLinks = {
+            monthly: 'https://buy.stripe.com/4gM3cu0Ud6Ea3VA4vIbbG00'
+            // yearly:  '...add when created in Stripe...',
+            // enterprise: '...add when created in Stripe...'
+        };
+
         this.init();
     }
     
@@ -172,7 +180,7 @@ class NexaQuantumLicenseManager {
                         <div class="plan-card popular">
                             <div class="plan-badge">Most Popular</div>
                             <h4>Professional Monthly</h4>
-                            <div class="plan-price">$29.99<span>/month</span></div>
+                            <div class="plan-price">$39.99<span>/month</span></div>
                             <ul class="plan-features">
                                 <li>✅ Full POS functionality</li>
                                 <li>✅ Up to 5 stores</li>
@@ -181,7 +189,7 @@ class NexaQuantumLicenseManager {
                                 <li>✅ Priority support</li>
                                 <li>✅ Regular updates</li>
                             </ul>
-                            <button class="plan-button" onclick="nexaLicense.subscribeToPlan('monthly', 29.99)">
+                            <button class="plan-button" onclick="nexaLicense.subscribeToPlan('monthly', 39.99)">
                                 Subscribe Monthly
                             </button>
                         </div>
@@ -408,8 +416,14 @@ class NexaQuantumLicenseManager {
     
     // Subscription Management
     subscribeToPlan(planType, price) {
-        // Show payment modal with plan details
-        this.showPaymentModal(planType, price);
+        // Open Stripe-hosted checkout in a new tab.
+        const url = this.stripeLinks && this.stripeLinks[planType];
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        // No live Stripe link for this plan yet — fall back to contact.
+        this.contactSales();
     }
     
     showPaymentModal(planType, price) {
