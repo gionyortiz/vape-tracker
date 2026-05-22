@@ -384,6 +384,7 @@ class NexaQuantumPaymentProcessor {
         const modal = document.createElement('div');
         modal.id = 'payment-modal';
         modal.className = 'payment-modal';
+        modal.style.display = 'none';
         modal.innerHTML = `
             <div class="payment-modal-content">
                 <div class="payment-header">
@@ -579,7 +580,7 @@ class NexaQuantumPaymentProcessor {
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.8);
-                display: flex;
+                display: none; /* hidden by default; shown via showPaymentModal() */
                 justify-content: center;
                 align-items: center;
                 z-index: 10001;

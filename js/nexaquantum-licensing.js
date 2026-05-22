@@ -15,13 +15,19 @@ class NexaQuantumLicenseManager {
     
     init() {
         // 30-DAY FREE TRIAL VERSION - Then $29.99/month
-        this.loadLicenseData();
-        this.setupLicenseValidation();
-        this.createLicenseStatus();
-        this.addLicenseStyles();
-        
-        console.log('✅ NexaQuantum POS - 30-Day FREE Trial');
-        console.log('💰 After trial: $29.99/month or $299.99/year');
+        try {
+            this.loadLicenseData();
+            if (typeof this.setupLicenseValidation === 'function') {
+                this.setupLicenseValidation();
+            }
+            this.createLicenseStatus();
+            this.addLicenseStyles();
+            
+            console.log('✅ NexaQuantum POS - 30-Day FREE Trial');
+            console.log('💰 After trial: $29.99/month or $299.99/year');
+        } catch (e) {
+            console.warn('License init error (non-critical):', e.message);
+        }
     }
     
     // Platform Detection
@@ -86,6 +92,13 @@ class NexaQuantumLicenseManager {
         console.log(`Trial expires: ${trialEnd.toLocaleDateString()}`);
     }
     
+    setupLicenseValidation() {
+        // Periodically validate license status
+        setInterval(() => {
+            this.validateCurrentLicense();
+        }, 60000); // Check every minute
+    }
+    
     // Validate current license
     validateCurrentLicense() {
         const now = new Date();
@@ -136,6 +149,7 @@ class NexaQuantumLicenseManager {
         const modal = document.createElement('div');
         modal.id = 'license-modal';
         modal.className = 'license-modal';
+        modal.style.display = 'none';
         modal.innerHTML = `
             <div class="license-modal-content">
                 <div class="license-header">
@@ -712,8 +726,10 @@ class NexaQuantumLicenseManager {
         this.maxTrialTransactions = 100;
         this.currentTrialTransactions = parseInt(localStorage.getItem('trial_transactions') || '0');
         
-        // Show trial banner
-        this.showTrialBanner();
+        // Show trial banner (safely)
+        if (typeof this.showTrialBanner === 'function') {
+            this.showTrialBanner();
+        }
     }
     
     removeLicenseRestrictions() {
@@ -722,6 +738,32 @@ class NexaQuantumLicenseManager {
         if (trialBanner) {
             trialBanner.remove();
         }
+    }
+
+    showTrialBanner() {
+        // Show a banner indicating trial status
+        const existingBanner = document.getElementById('trial-banner');
+        if (existingBanner) {
+            return; // Already showing
+        }
+        
+        const banner = document.createElement('div');
+        banner.id = 'trial-banner';
+        banner.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        `;
+        banner.innerHTML = '🎉 NexaQuantum - 30 Day FREE Trial | $29.99/month after trial';
+        document.body.insertBefore(banner, document.body.firstChild);
     }
     
     // Data Management
@@ -876,7 +918,7 @@ class NexaQuantumLicenseManager {
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.8);
-                display: flex;
+                display: none; /* hidden by default; shown via showLicenseModal() */
                 justify-content: center;
                 align-items: center;
                 z-index: 10000;

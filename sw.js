@@ -1,7 +1,7 @@
 // Service Worker for NexaQuantum POS PWA
 // Enables offline functionality and app-like experience
 
-const CACHE_NAME = 'nexaquantum-vape-v1.1.7';
+const CACHE_NAME = 'nexaquantum-vape-v1.2.8';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -50,31 +50,31 @@ self.addEventListener('install', function(event) {
   self.skipWaiting();
 });
 
-// Fetch events - serve from cache when offline
+// Fetch events - network-first for same-origin GET (avoids stale JS); cache fallback for offline
 self.addEventListener('fetch', function(event) {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
+    (isSameOrigin ? fetch(event.request) : fetch(event.request))
+      .then(function(networkResponse) {
+        // If network works, update cache for same-origin assets
+        if (isSameOrigin && networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, responseToCache);
+          });
         }
-        
-        return fetch(event.request).then(function(response) {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone response for cache
-          var responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then(function(cache) {
-              cache.put(event.request, responseToCache);
-            });
-          
-          return response;
+        return networkResponse;
+      })
+      .catch(function() {
+        // Offline or network error: serve from cache if possible
+        return caches.match(event.request).then(function(cached) {
+          return cached || new Response('', { status: 504, statusText: 'Offline' });
         });
       })
   );
