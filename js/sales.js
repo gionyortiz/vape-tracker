@@ -87,7 +87,7 @@ class SalesManager {
 
         const html = filteredProducts.map(product => `
             <div class="product-card" onclick="vapeTracker.sales.addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/150x100?text=Product'">
+                <img src="${product.image || ''}" alt="${product.name}" onerror="this.style.display='none';this.parentElement.querySelector('.product-img-fallback').style.display='flex'" style="width:100%;height:80px;object-fit:contain;"><div class="product-img-fallback" style="display:none;width:100%;height:80px;align-items:center;justify-content:center;background:#f0f4f8;border-radius:6px;font-size:2rem;">📦</div>
                 <h4>${product.name}</h4>
                 <p class="price">${this.app.formatCurrency(product.price)}</p>
                 <p class="stock">Stock: ${product.stock}</p>

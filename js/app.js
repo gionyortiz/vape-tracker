@@ -15,6 +15,18 @@ class VapeTracker {
         this.init();
     }
 
+    safeParseStorage(key, fallbackValue) {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined || raw === '') return fallbackValue;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn(`Invalid JSON in localStorage for ${key}. Resetting.`, e?.message || e);
+            try { localStorage.removeItem(key); } catch (_) {}
+            return fallbackValue;
+        }
+    }
+
     init() {
         this.loadData();
         this.initializeManagers();
@@ -43,10 +55,10 @@ class VapeTracker {
 
     loadData() {
         // Load data from localStorage
-        this.products = JSON.parse(localStorage.getItem('vape_products')) || this.getSampleProducts();
-        this.customers = JSON.parse(localStorage.getItem('vape_customers')) || [];
-        this.transactions = JSON.parse(localStorage.getItem('vape_transactions')) || [];
-        this.settings = { ...this.settings, ...JSON.parse(localStorage.getItem('vape_settings')) || {} };
+        this.products = this.safeParseStorage('vape_products', null) || this.getSampleProducts();
+        this.customers = this.safeParseStorage('vape_customers', []) || [];
+        this.transactions = this.safeParseStorage('vape_transactions', []) || [];
+        this.settings = { ...this.settings, ...(this.safeParseStorage('vape_settings', {}) || {}) };
         
         // Save sample data if no data exists
         if (!localStorage.getItem('vape_products')) {
@@ -72,7 +84,7 @@ class VapeTracker {
                 price: 29.99,
                 stock: 25,
                 description: 'JUUL basic device kit',
-                image: 'https://via.placeholder.com/150x100?text=JUUL'
+                image: ''
             },
             {
                 id: 2,
@@ -83,7 +95,7 @@ class VapeTracker {
                 price: 19.99,
                 stock: 50,
                 description: '30ml bottle, 6mg nicotine',
-                image: 'https://via.placeholder.com/150x100?text=E-Liquid'
+                image: ''
             },
             {
                 id: 3,
@@ -94,7 +106,7 @@ class VapeTracker {
                 price: 12.99,
                 stock: 100,
                 description: '5-pack replacement coils',
-                image: 'https://via.placeholder.com/150x100?text=Coils'
+                image: ''
             },
             {
                 id: 4,
@@ -105,7 +117,7 @@ class VapeTracker {
                 price: 3.99,
                 stock: 48,
                 description: '12oz bottle',
-                image: 'https://via.placeholder.com/150x100?text=Corona'
+                image: ''
             },
             {
                 id: 5,
@@ -116,7 +128,7 @@ class VapeTracker {
                 price: 24.99,
                 stock: 15,
                 description: 'Cotton t-shirt with logo',
-                image: 'https://via.placeholder.com/150x100?text=T-Shirt'
+                image: ''
             }
         ];
     }
@@ -279,7 +291,9 @@ class VapeTracker {
                 this.loadCustomers();
                 break;
             case 'reports':
-                this.loadReports();
+                if (typeof this.loadReports === 'function') {
+                    this.loadReports();
+                }
                 break;
             case 'settings':
                 this.loadSettings();
