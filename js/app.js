@@ -604,8 +604,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Listen for language changes
         languageSelect.addEventListener('change', (e) => {
-            console.log('Language changed to:', e.target.value);
             window.i18n.setLanguage(e.target.value);
+            window.i18n.translatePage();
+            // Keep flag buttons in sync
+            document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === e.target.value);
+            });
+        });
+    }
+    // Apply translations on startup
+    if (window.i18n) {
+        window.i18n.translatePage();
+        // Sync flag buttons to saved language
+        const curLang = window.i18n.getLanguage();
+        document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === curLang);
         });
     }
 });

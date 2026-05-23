@@ -130,6 +130,33 @@ body {
     margin-right: 0.5rem;
 }
 
+/* Language Flag Picker */
+.lang-picker {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    margin-right: 0.5rem;
+}
+.lang-flag-btn {
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s, border-color 0.2s;
+}
+.lang-flag-btn:hover { opacity: 1; }
+.lang-flag-btn.active { opacity: 1; border-color: var(--warning-color, #f59e0b); }
+
+/* RTL support */
+body.rtl { direction: rtl; text-align: right; }
+body.rtl .nav-menu { flex-direction: row-reverse; }
+body.rtl .stat-icon { margin-right: 0; margin-left: 1rem; }
+body.rtl .form-group label { text-align: right; }
+
 .nav-toggle {
     display: none;
     flex-direction: column;
