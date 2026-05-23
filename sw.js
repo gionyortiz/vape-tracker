@@ -26,6 +26,7 @@ const urlsToCache = [
   '/js/employee-management.js',
   '/js/enterprise-reporting.js',
   '/js/multi-store-manager.js',
+  '/js/cloud-sync.js',
   '/js/vape-specific-features.js',
   '/js/enhanced-inventory.js',
   '/js/visual-effects.js',

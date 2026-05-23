@@ -51,6 +51,11 @@ class VapeTracker {
         if (window.CustomerCRMManager) {
             this.customerCRM = new CustomerCRMManager(this);
         }
+
+        // Initialize Cloud Sync
+        if (window.CloudSyncManager) {
+            this.cloudSync = new CloudSyncManager(this);
+        }
     }
 
     loadData() {
@@ -71,6 +76,8 @@ class VapeTracker {
         localStorage.setItem('vape_customers', JSON.stringify(this.customers));
         localStorage.setItem('vape_transactions', JSON.stringify(this.transactions));
         localStorage.setItem('vape_settings', JSON.stringify(this.settings));
+        // Auto-sync to cloud if enabled
+        if (this.cloudSync) this.cloudSync.autoSync();
     }
 
     getSampleProducts() {

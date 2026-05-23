@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>NexaQuantum Vape - Professional POS System for Vape Retailers</title>
     
     <!-- PWA Configuration -->
@@ -856,33 +859,43 @@
     </div>
 
     <!-- Core Scripts -->
-    <script src="js/nexaquantum-licensing.js"></script>
-    <script src="js/nexaquantum-payments.js"></script>
-    <script src="js/payment-demo.js"></script>
-    <script src="js/customer-loyalty.js"></script>
-    <script src="js/customer-crm.js"></script>
+    <script src="js/nexaquantum-licensing.js?v=1.2.7"></script>
+    <script src="js/nexaquantum-payments.js?v=1.2.7"></script>
+    <script src="js/payment-demo.js?v=1.2.7"></script>
+    <script src="js/customer-loyalty.js?v=1.2.7"></script>
+    <script src="js/customer-crm.js?v=1.2.7"></script>
     
     <!-- Internationalization (MUST load before app.js) -->
-    <script src="js/i18n.js"></script>
+    <script src="js/i18n.js?v=1.2.7"></script>
     
-    <script src="js/app.js"></script>
-    <script src="js/inventory.js"></script>
-    <script src="js/sales.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/data-manager.js"></script>
+    <script src="js/app.js?v=1.2.7"></script>
+    <script src="js/inventory.js?v=1.2.7"></script>
+    <script src="js/sales.js?v=1.2.7"></script>
+    <script src="js/dashboard.js?v=1.2.7"></script>
+    <script src="js/data-manager.js?v=1.2.7"></script>
     
     <!-- Enterprise Scripts -->
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script src="js/enterprise-app.js"></script>
-    <script src="js/hardware-integration.js"></script>
-    <script src="js/employee-management.js"></script>
-    <script src="js/enterprise-reporting.js"></script>
-    <script src="js/multi-store-manager.js"></script>
-    <script src="js/vape-specific-features.js"></script>
-    <script src="js/enhanced-inventory.js"></script>
-    <script src="js/visual-effects.js"></script>
-    <script src="js/mobile-enhancements.js"></script>
-    <script src="test-scenarios.js"></script>
+    <script>
+        // Compatibility stub: prevents enterprise layer from crashing if reporting script is stale/cached
+        window.EnterpriseReporting = window.EnterpriseReporting || {};
+        ['initialize', 'updateKPIs', 'updateStats', 'showReportGeneratorModal', 'showScheduleModal', 'generateQuickReport'].forEach(function (name) {
+            if (typeof window.EnterpriseReporting[name] !== 'function') {
+                window.EnterpriseReporting[name] = function () {};
+            }
+        });
+    </script>
+    <script src="js/enterprise-app.js?v=1.2.7"></script>
+    <script src="js/hardware-integration.js?v=1.2.7"></script>
+    <script src="js/employee-management.js?v=1.2.7"></script>
+    <script src="js/enterprise-reporting.js?v=1.2.7"></script>
+    <script src="js/multi-store-manager.js?v=1.2.7"></script>
+    <script src="js/cloud-sync.js?v=1.3.0"></script>
+    <script src="js/vape-specific-features.js?v=1.2.7"></script>
+    <script src="js/enhanced-inventory.js?v=1.2.7"></script>
+    <script src="js/visual-effects.js?v=1.2.7"></script>
+    <script src="js/mobile-enhancements.js?v=1.2.7"></script>
+    <script src="test-scenarios.js?v=1.2.7"></script>
     
     <!-- PWA Service Worker Registration -->
     <script>
