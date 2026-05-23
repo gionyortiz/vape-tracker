@@ -22,7 +22,7 @@ class NexaQuantumLicenseManager {
     }
     
     init() {
-        // 30-DAY FREE TRIAL VERSION - Then $29.99/month
+        // 30-DAY FREE TRIAL VERSION - Then $39.99/month
         try {
             this.loadLicenseData();
             if (typeof this.setupLicenseValidation === 'function') {
@@ -30,12 +30,71 @@ class NexaQuantumLicenseManager {
             }
             this.createLicenseStatus();
             this.addLicenseStyles();
+            this.checkUpgradeRedirect();
             
             console.log('✅ NexaQuantum POS - 30-Day FREE Trial');
-            console.log('💰 After trial: $29.99/month or $299.99/year');
+            console.log('💰 After trial: $39.99/month');
         } catch (e) {
             console.warn('License init error (non-critical):', e.message);
         }
+    }
+
+    // Called automatically when Stripe redirects back with ?upgraded=1
+    checkUpgradeRedirect() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.get('upgraded')) return;
+
+        // Remove the param from the URL bar without reloading
+        const cleanUrl = window.location.pathname;
+        history.replaceState({}, document.title, cleanUrl);
+
+        // Ask for the email used at checkout
+        const email = window.prompt(
+            'Welcome back! Enter the email address you used at checkout to activate your license:'
+        );
+        if (!email || !email.includes('@')) {
+            alert('No email entered. You can activate later from the Subscribe button.');
+            return;
+        }
+
+        this.activateLicenseByEmail(email.trim().toLowerCase());
+    }
+
+    // Fetch license from Cloudflare Worker and unlock if active
+    activateLicenseByEmail(email) {
+        const workerUrl = 'https://nexaquantum-stripe-webhook.gionyortiz.workers.dev/license?email=' +
+            encodeURIComponent(email);
+
+        fetch(workerUrl)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok && data.status === 'active') {
+                    const expiration = data.currentPeriodEnd
+                        ? new Date(data.currentPeriodEnd * 1000).toISOString()
+                        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+
+                    const license = {
+                        key: 'STRIPE-' + email,
+                        type: 'subscription',
+                        expiration: expiration,
+                        activatedDate: new Date().toISOString(),
+                        email: email,
+                        plan: data.plan || 'professional',
+                        features: 'all'
+                    };
+
+                    localStorage.setItem('nexaquantum_license', JSON.stringify(license));
+                    alert('✅ License activated! Thank you for subscribing to NexaQuantum POS.');
+                    window.location.reload();
+                } else if (data.ok === false && data.error === 'not found') {
+                    alert('⏳ Payment processing — please wait a minute and try again, or contact support.');
+                } else {
+                    alert('❌ No active subscription found for ' + email + '. Please contact support.');
+                }
+            })
+            .catch(function() {
+                alert('⚠️ Could not connect to the license server. Check your internet and try again.');
+            });
     }
     
     // Platform Detection
