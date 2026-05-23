@@ -835,7 +835,7 @@ class NexaQuantumLicenseManager {
             z-index: 9999;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         `;
-        banner.innerHTML = '🎉 NexaQuantum - 30 Day FREE Trial | $29.99/month after trial';
+        banner.innerHTML = '🎉 NexaQuantum - 30 Day FREE Trial | $39.99/month after trial';
         document.body.insertBefore(banner, document.body.firstChild);
     }
     
