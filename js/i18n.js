@@ -9,6 +9,10 @@ const translations = {
         'nav.sales': 'Sales',
         'nav.reports': 'Reports',
         'nav.settings': 'Settings',
+        'nav.customers': 'Customers',
+        'nav.scanner': 'Scanner',
+        'nav.employees': 'Employees',
+        'nav.stores': 'Stores',
         
         // Dashboard
         'dashboard.title': 'Dashboard',
@@ -100,6 +104,10 @@ const translations = {
         'nav.sales': 'Ventas',
         'nav.reports': 'Reportes',
         'nav.settings': 'Configuración',
+        'nav.customers': 'Clientes',
+        'nav.scanner': 'Escáner',
+        'nav.employees': 'Empleados',
+        'nav.stores': 'Tiendas',
         
         // Panel
         'dashboard.title': 'Panel de Control',
