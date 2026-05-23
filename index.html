@@ -400,36 +400,92 @@
         <div id="scanner-page" class="page">
             <div class="page-header">
                 <h1><i class="fas fa-barcode"></i> Barcode Scanner</h1>
-                <div class="scanner-controls">
-                    <button class="btn-primary" id="start-scanner-btn">
-                        <i class="fas fa-camera"></i> Start Camera
-                    </button>
-                    <button class="btn-secondary" id="stop-scanner-btn" style="display: none;">
-                        <i class="fas fa-stop"></i> Stop Scanner
-                    </button>
+            </div>
+
+            <!-- Scanner Mode Selector -->
+            <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+                <button class="btn-primary scanner-mode-btn" id="mode-usb-btn" onclick="setScannerMode('usb')">
+                    <i class="fas fa-plug"></i> USB / Wireless Scanner
+                </button>
+                <button class="btn-secondary scanner-mode-btn" id="mode-camera-btn" onclick="setScannerMode('camera')">
+                    <i class="fas fa-camera"></i> Camera Scanner
+                </button>
+                <button class="btn-secondary scanner-mode-btn" id="mode-manual-btn" onclick="setScannerMode('manual')">
+                    <i class="fas fa-keyboard"></i> Manual Entry
+                </button>
+            </div>
+
+            <!-- USB / Wireless Scanner Mode -->
+            <div id="scanner-mode-usb" class="scanner-mode-panel">
+                <div class="scanner-card" style="padding:24px;background:#1a1a2e;border-radius:12px;border:2px solid #4CAF50;">
+                    <h3 style="color:#4CAF50;margin-bottom:8px;"><i class="fas fa-plug"></i> USB / Bluetooth / Wireless Scanner</h3>
+                    <p style="color:#aaa;margin-bottom:16px;">Plug in your scanner or connect via Bluetooth. Click the field below, then scan a barcode — it will appear automatically.</p>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <input type="text" id="usb-scanner-input" placeholder="Click here, then scan barcode..." 
+                            style="flex:1;min-width:250px;padding:14px;font-size:18px;border:2px solid #4CAF50;border-radius:8px;background:#0d0d1a;color:#fff;" 
+                            autofocus autocomplete="off">
+                        <button class="btn-primary" id="usb-lookup-btn"><i class="fas fa-search"></i> Look Up</button>
+                    </div>
+                    <p style="color:#666;margin-top:10px;font-size:13px;">Most USB/Bluetooth scanners send Enter automatically after scanning — no button click needed.</p>
+                </div>
+                <div id="usb-scan-results" style="margin-top:16px;"></div>
+            </div>
+
+            <!-- Camera Scanner Mode -->
+            <div id="scanner-mode-camera" class="scanner-mode-panel" style="display:none;">
+                <div class="scanner-container">
+                    <div class="scanner-video-container">
+                        <video id="scanner-video" style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
+                        <div class="scanner-overlay">
+                            <div class="scanner-line"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;display:flex;gap:10px;">
+                        <button class="btn-primary" id="start-scanner-btn"><i class="fas fa-camera"></i> Start Camera</button>
+                        <button class="btn-secondary" id="stop-scanner-btn" style="display:none;"><i class="fas fa-stop"></i> Stop</button>
+                    </div>
+                    <div class="scanner-results" style="margin-top:16px;">
+                        <h3>Scan Results</h3>
+                        <div id="scan-results-list"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="scanner-container">
-                <div class="scanner-video-container">
-                    <video id="scanner-video" style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
-                    <div class="scanner-overlay">
-                        <div class="scanner-line"></div>
+
+            <!-- Manual Entry Mode -->
+            <div id="scanner-mode-manual" class="scanner-mode-panel" style="display:none;">
+                <div class="scanner-card" style="padding:24px;background:#1a1a2e;border-radius:12px;border:2px solid #2196F3;">
+                    <h3 style="color:#2196F3;margin-bottom:8px;"><i class="fas fa-keyboard"></i> Manual Barcode Entry</h3>
+                    <p style="color:#aaa;margin-bottom:16px;">Type or paste a barcode number to look up a product.</p>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <input type="text" id="manual-barcode" placeholder="Enter barcode number..." 
+                            style="flex:1;min-width:250px;padding:14px;font-size:18px;border:2px solid #2196F3;border-radius:8px;background:#0d0d1a;color:#fff;">
+                        <button class="btn-primary" id="manual-lookup-btn"><i class="fas fa-search"></i> Look Up</button>
                     </div>
                 </div>
-                
-                <div class="scanner-results">
-                    <h3>Scan Results</h3>
-                    <div id="scan-results-list"></div>
-                    
-                    <div class="manual-input">
-                        <h4>Manual Entry</h4>
-                        <input type="text" id="manual-barcode" placeholder="Enter barcode manually...">
-                        <button class="btn-primary" id="manual-lookup-btn">Lookup</button>
-                    </div>
-                </div>
+                <div id="manual-scan-results" style="margin-top:16px;"></div>
             </div>
         </div>
+
+        <script>
+        function setScannerMode(mode) {
+            document.querySelectorAll('.scanner-mode-panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.scanner-mode-btn').forEach(b => { b.className = b.className.replace('btn-primary','btn-secondary'); });
+            document.getElementById('scanner-mode-' + mode).style.display = 'block';
+            var activeBtn = document.getElementById('mode-' + mode + '-btn');
+            activeBtn.className = activeBtn.className.replace('btn-secondary','btn-primary');
+            if (mode === 'usb') setTimeout(function(){ document.getElementById('usb-scanner-input').focus(); }, 100);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var usbInput = document.getElementById('usb-scanner-input');
+            if (usbInput) {
+                usbInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        document.getElementById('usb-lookup-btn').click();
+                    }
+                });
+            }
+        });
+        </script>
 
         <!-- Employees Page -->
         <div id="employees-page" class="page">

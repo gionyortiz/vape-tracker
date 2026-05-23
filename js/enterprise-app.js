@@ -34,37 +34,71 @@ let enterpriseState = {
     lastSync: null
 };
 
+// Defensive global stubs (prevents runtime crashes if enterprise-reporting.js is stale/cached)
+window.EnterpriseReporting = window.EnterpriseReporting || {};
+
+function safeInvoke(fn, label) {
+    try {
+        if (typeof fn === 'function') fn();
+    } catch (e) {
+        console.warn(label ? `${label} failed:` : 'Call failed:', e?.message || e);
+    }
+}
+
 // Initialize the enterprise application
 function initializeEnterpriseApp() {
-    console.log('Initializing Enterprise POS System...');
-    
-    // Load stored settings
-    loadSystemSettings();
-    
-    // Initialize hardware systems
-    if (typeof HardwareIntegration !== 'undefined') {
-        HardwareIntegration.initialize();
+    try {
+        console.log('Initializing Enterprise POS System...');
+        
+        // Load stored settings
+        loadSystemSettings();
+        
+        // Initialize hardware systems
+        if (typeof HardwareIntegration !== 'undefined') {
+            try {
+                HardwareIntegration.initialize();
+            } catch (e) {
+                console.log('HardwareIntegration init skipped:', e.message);
+            }
+        }
+        
+        // Initialize employee management
+        if (typeof EmployeeManagement !== 'undefined' && EmployeeManagement.initialize) {
+            try {
+                EmployeeManagement.initialize();
+            } catch (e) {
+                console.log('EmployeeManagement init skipped:', e.message);
+            }
+        }
+        
+        // Initialize multi-store features
+        if (typeof MultiStoreManager !== 'undefined') {
+            try {
+                if (typeof MultiStoreManager.initialize === 'function') {
+                    MultiStoreManager.initialize();
+                }
+            } catch (e) {
+                console.log('MultiStoreManager initialization skipped:', e.message);
+            }
+        }
+        
+        // Initialize enterprise reporting
+        try {
+            const er = window.EnterpriseReporting;
+            if (er && typeof er.initialize === 'function') {
+                er.initialize();
+            }
+        } catch (e) {
+            console.log('EnterpriseReporting initialization skipped:', e.message);
+        }
+        
+        // Check for user session
+        checkUserSession();
+        
+        console.log('Enterprise POS System initialized successfully');
+    } catch (e) {
+        console.warn('Enterprise app initialization error (non-critical):', e.message);
     }
-    
-    // Initialize employee management
-    if (typeof EmployeeManagement !== 'undefined') {
-        EmployeeManagement.initialize();
-    }
-    
-    // Initialize multi-store features
-    if (typeof MultiStoreManager !== 'undefined') {
-        MultiStoreManager.initialize();
-    }
-    
-    // Initialize enterprise reporting
-    if (typeof EnterpriseReporting !== 'undefined') {
-        EnterpriseReporting.initialize();
-    }
-    
-    // Check for user session
-    checkUserSession();
-    
-    console.log('Enterprise POS System initialized successfully');
 }
 
 // Navigation management
@@ -214,6 +248,18 @@ function initializeScanner() {
             }
         });
     }
+
+    const usbLookupBtn = document.getElementById('usb-lookup-btn');
+    if (usbLookupBtn) {
+        usbLookupBtn.addEventListener('click', () => {
+            const barcode = document.getElementById('usb-scanner-input').value.trim();
+            if (barcode && typeof HardwareIntegration !== 'undefined') {
+                HardwareIntegration.lookupProduct(barcode);
+                document.getElementById('usb-scanner-input').value = '';
+                document.getElementById('usb-scanner-input').focus();
+            }
+        });
+    }
 }
 
 // Employee management initialization
@@ -345,16 +391,18 @@ function initializeReports() {
     
     if (generateReportBtn) {
         generateReportBtn.addEventListener('click', () => {
-            if (typeof EnterpriseReporting !== 'undefined') {
-                EnterpriseReporting.showReportGeneratorModal();
+            const er = window.EnterpriseReporting;
+            if (er && typeof er.showReportGeneratorModal === 'function') {
+                er.showReportGeneratorModal();
             }
         });
     }
     
     if (scheduleReportBtn) {
         scheduleReportBtn.addEventListener('click', () => {
-            if (typeof EnterpriseReporting !== 'undefined') {
-                EnterpriseReporting.showScheduleModal();
+            const er = window.EnterpriseReporting;
+            if (er && typeof er.showScheduleModal === 'function') {
+                er.showScheduleModal();
             }
         });
     }
@@ -362,8 +410,9 @@ function initializeReports() {
     reportTypeCards.forEach(card => {
         card.addEventListener('click', () => {
             const reportType = card.getAttribute('data-type');
-            if (typeof EnterpriseReporting !== 'undefined') {
-                EnterpriseReporting.generateQuickReport(reportType);
+            const er = window.EnterpriseReporting;
+            if (er && typeof er.generateQuickReport === 'function') {
+                er.generateQuickReport(reportType);
             }
         });
     });
@@ -623,9 +672,9 @@ function loadStoresGrid() {
 }
 
 function updateKPIDashboard() {
-    if (typeof EnterpriseReporting !== 'undefined') {
-        EnterpriseReporting.updateKPIs();
-    }
+    const er = window.EnterpriseReporting;
+    safeInvoke(er && er.updateKPIs, 'EnterpriseReporting.updateKPIs');
+    safeInvoke(window.vapeTracker?.reporting?.updateKPIs, 'vapeTracker.reporting.updateKPIs');
 }
 
 // Export for global access
