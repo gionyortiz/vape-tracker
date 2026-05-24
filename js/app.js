@@ -257,6 +257,12 @@ class VapeTracker {
     }
 
     showPage(pageName) {
+        // Close mobile menu
+        const navMenu = document.querySelector('.nav-menu');
+        const mobileToggle = document.getElementById('mobile-menu');
+        if (navMenu) navMenu.classList.remove('active');
+        if (mobileToggle) mobileToggle.classList.remove('active');
+
         // Hide all pages
         document.querySelectorAll('.page').forEach(page => {
             page.classList.remove('active');
@@ -622,4 +628,14 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('active', btn.dataset.lang === curLang);
         });
     }
+
+    // Close mobile menu when any flag button is clicked
+    document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileToggle = document.getElementById('mobile-menu');
+            if (navMenu) navMenu.classList.remove('active');
+            if (mobileToggle) mobileToggle.classList.remove('active');
+        });
+    });
 });

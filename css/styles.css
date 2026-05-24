@@ -46,11 +46,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem; /* Reduced padding */
-    max-width: 1200px;
+    padding: 0 1rem;
+    max-width: 1400px;
     margin: 0 auto;
     height: 100%;
-}
+    gap: 0.5rem;
 }
 
 .nav-logo {
@@ -102,48 +102,67 @@ body {
     display: flex;
     list-style: none;
     margin: 0;
-    gap: 0.5rem; /* Added gap, removed individual margins */
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
 .nav-item {
     position: relative;
+    flex-shrink: 0;
 }
 
 .nav-link {
-    color: var(--white);
+    color: rgba(255,255,255,0.9);
     text-decoration: none;
-    padding: 0.5rem 0.8rem; /* Reduced padding */
+    padding: 0.4rem 0.6rem;
     border-radius: 4px;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 0.3rem; /* Reduced gap */
-    font-size: 0.85rem; /* Smaller font */
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
 }
 
 .nav-link:hover,
 .nav-link.active {
     background-color: var(--secondary-color);
+    color: var(--white);
 }
 
 .nav-link i {
-    margin-right: 0.5rem;
+    font-size: 0.85rem;
+    width: 14px;
+    text-align: center;
 }
 
-/* Language Flag Picker */
+/* Language Flag Picker — desktop */
 .lang-picker {
     display: flex;
     gap: 2px;
     align-items: center;
-    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
 }
+
+/* In-menu lang picker row (mobile dropdown) */
+.lang-picker-menu {
+    display: none;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    margin-top: 0.25rem;
+}
+
 .lang-flag-btn {
     background: transparent;
     border: 2px solid transparent;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1.2rem;
-    padding: 2px 4px;
+    font-size: 1.3rem;
+    padding: 3px 5px;
     line-height: 1;
     opacity: 0.6;
     transition: opacity 0.2s, border-color 0.2s;
@@ -161,6 +180,8 @@ body.rtl .form-group label { text-align: right; }
     display: none;
     flex-direction: column;
     cursor: pointer;
+    flex-shrink: 0;
+    padding: 4px;
 }
 
 .bar {
@@ -967,28 +988,40 @@ form {
 }
 
 /* Responsive Design */
+@media (max-width: 900px) {
+    /* On tablets hide nav text, show icons only */
+    .nav-link span {
+        display: none;
+    }
+    .nav-link {
+        padding: 0.45rem 0.55rem;
+    }
+    .lang-picker .lang-flag-btn {
+        font-size: 1rem;
+        padding: 2px 3px;
+    }
+}
+
 @media (max-width: 768px) {
     .nav-container {
-        padding: 0.5rem; /* Reduced padding on mobile */
+        padding: 0 0.75rem;
     }
-    
+
+    /* Hide desktop nav and lang-picker, show hamburger */
     .nav-menu {
         position: fixed;
         left: -100%;
-        top: 60px; /* Updated for compact navbar */
+        top: 60px;
         flex-direction: column;
+        flex-wrap: nowrap;
         background-color: var(--primary-color);
         width: 100%;
         text-align: center;
         transition: 0.3s;
-        box-shadow: var(--shadow);
-        gap: 0; /* Remove gap in mobile */
-    }
-    
-    .nav-link {
-        padding: 1rem; /* Larger touch targets on mobile */
-        font-size: 0.9rem; /* Slightly larger on mobile */
-        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        gap: 0;
+        z-index: 999;
+        padding-bottom: 0.5rem;
     }
 
     .nav-menu.active {
@@ -996,7 +1029,28 @@ form {
     }
 
     .nav-menu li {
-        margin: 1rem 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .nav-link {
+        padding: 0.9rem 1rem;
+        font-size: 0.95rem;
+        justify-content: flex-start;
+        border-radius: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .nav-link span {
+        display: inline; /* show text in dropdown */
+    }
+
+    .lang-picker {
+        display: none; /* hidden from header on mobile */
+    }
+
+    .lang-picker-menu {
+        display: flex; /* shown inside dropdown */
     }
 
     .nav-toggle {
@@ -1062,8 +1116,12 @@ form {
 }
 
 @media (max-width: 480px) {
-    .nav-container {
-        padding: 1rem;
+    .nav-logo .app-name {
+        display: none; /* show only company name on tiny screens */
+    }
+
+    .company-logo {
+        height: 32px;
     }
 
     .product-grid {
