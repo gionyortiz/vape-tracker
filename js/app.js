@@ -145,6 +145,7 @@ class VapeTracker {
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation(); // prevent enterprise-app.js <li> handler from calling showPage(null)
                 const page = link.getAttribute('data-page');
                 this.showPage(page);
             });
