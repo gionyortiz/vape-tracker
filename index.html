@@ -701,6 +701,9 @@
                     <button class="tab-btn" data-tab="hardware" data-i18n="settings.hardware">Hardware</button>
                     <button class="tab-btn" data-tab="integrations" data-i18n="settings.integrations">Integrations</button>
                     <button class="tab-btn" data-tab="security" data-i18n="settings.security">Security</button>
+                    <button class="tab-btn" data-tab="appusers" style="background:#1a1a2e;color:#4CAF50;border:1px solid #4CAF50;">
+                        <i class="fas fa-users"></i> App Users
+                    </button>
                 </div>
                 
                 <div class="tab-content active" id="general-tab">
@@ -826,6 +829,18 @@
                             Enable audit trail logging
                         </label>
                     </div>
+                </div>
+
+                <!-- App Users Admin Tab -->
+                <div class="tab-content" id="appusers-tab">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+                        <h3 style="margin:0;"><i class="fas fa-users" style="color:#4CAF50;"></i> Registered App Users</h3>
+                        <button id="load-appusers-btn" class="btn-primary" onclick="loadAppUsers()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="appusers-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;"></div>
+                    <div id="appusers-table-wrap"></div>
                 </div>
             </div>
         </div>
@@ -1012,6 +1027,110 @@
                 }
             }, 5000);
         });
+    </script>
+
+    <!-- App Users Admin Panel -->
+    <script>
+    const WORKER_URL = 'https://nexaquantum-cloud-sync.gionyortiz.workers.dev';
+    const WORKER_KEY = 'nq-sync-2026';
+
+    async function loadAppUsers() {
+        const wrap = document.getElementById('appusers-table-wrap');
+        const statsDiv = document.getElementById('appusers-stats');
+        if (!wrap) return;
+        wrap.innerHTML = '<p style="color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Loading users...</p>';
+        statsDiv.innerHTML = '';
+
+        try {
+            // Fetch stats summary
+            const [statsRes, usersRes] = await Promise.all([
+                fetch(WORKER_URL + '/admin/stats', { headers: { 'X-NQ-Key': WORKER_KEY } }),
+                fetch(WORKER_URL + '/admin/users',  { headers: { 'X-NQ-Key': WORKER_KEY } }),
+            ]);
+            const stats = await statsRes.json();
+            const data  = await usersRes.json();
+
+            if (!stats.ok || !data.ok) {
+                wrap.innerHTML = '<p style="color:#e74c3c;">Error loading data. Check worker is deployed.</p>';
+                return;
+            }
+
+            // Render stat cards
+            const cards = [
+                { icon: 'fa-users',          label: 'Registered Users',  value: stats.registeredUsers,    color: '#4CAF50' },
+                { icon: 'fa-store',          label: 'Total Stores',       value: stats.totalStores,         color: '#2196F3' },
+                { icon: 'fa-box',            label: 'Total Products',     value: stats.totalProducts,       color: '#FF9800' },
+                { icon: 'fa-receipt',        label: 'Total Transactions', value: stats.totalTransactions,   color: '#9C27B0' },
+                { icon: 'fa-user-tag',       label: 'Total Customers',    value: stats.totalCustomers,      color: '#E91E63' },
+            ];
+            statsDiv.innerHTML = cards.map(c => `
+                <div style="background:#1a1a2e;border:1px solid ${c.color};border-radius:10px;padding:1rem;text-align:center;">
+                    <i class="fas ${c.icon}" style="color:${c.color};font-size:1.4rem;margin-bottom:0.4rem;display:block;"></i>
+                    <div style="font-size:1.8rem;font-weight:700;color:#fff;">${c.value}</div>
+                    <div style="font-size:0.78rem;color:#aaa;margin-top:0.2rem;">${c.label}</div>
+                </div>`).join('');
+
+            if (!data.users || data.users.length === 0) {
+                wrap.innerHTML = '<p style="color:#aaa;">No registered users yet.</p>';
+                return;
+            }
+
+            // Render user table
+            const rows = data.users.map((u, i) => {
+                const sinceMs = u.lastSync ? Date.now() - new Date(u.lastSync).getTime() : null;
+                const ago = sinceMs == null ? '—' : sinceMs < 60000 ? 'just now'
+                    : sinceMs < 3600000 ? Math.floor(sinceMs/60000) + 'm ago'
+                    : sinceMs < 86400000 ? Math.floor(sinceMs/3600000) + 'h ago'
+                    : Math.floor(sinceMs/86400000) + 'd ago';
+                const storeNames = u.stores.map(s => s.storeId).join(', ');
+                const totalProd  = u.stores.reduce((n, s) => n + s.products, 0);
+                const totalTx    = u.stores.reduce((n, s) => n + s.transactions, 0);
+                const totalCust  = u.stores.reduce((n, s) => n + s.customers, 0);
+                return `<tr style="border-bottom:1px solid #2a2a3e;">
+                    <td style="padding:0.7rem 0.5rem;color:#aaa;font-size:0.8rem;">${i+1}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#fff;font-weight:600;">${u.email}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#aaa;font-size:0.85rem;">${storeNames}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#4CAF50;text-align:center;">${totalProd}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#2196F3;text-align:center;">${totalTx}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#FF9800;text-align:center;">${totalCust}</td>
+                    <td style="padding:0.7rem 0.5rem;color:#aaa;font-size:0.8rem;">${ago}</td>
+                </tr>`;
+            }).join('');
+
+            wrap.innerHTML = `
+                <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;background:#0d0d1a;border-radius:10px;overflow:hidden;">
+                    <thead>
+                        <tr style="background:#1a1a2e;color:#aaa;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;">
+                            <th style="padding:0.7rem 0.5rem;text-align:left;">#</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:left;">Email</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:left;">Store(s)</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:center;">Products</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:center;">Transactions</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:center;">Customers</th>
+                            <th style="padding:0.7rem 0.5rem;text-align:left;">Last Sync</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                </div>
+                <p style="color:#666;font-size:0.75rem;margin-top:0.75rem;text-align:right;">
+                    Updated ${new Date().toLocaleTimeString()} — only users who enabled Cloud Sync appear here
+                </p>`;
+        } catch (err) {
+            wrap.innerHTML = `<p style="color:#e74c3c;">Could not reach worker: ${err.message}</p>`;
+        }
+    }
+
+    // Auto-load when the App Users tab is clicked
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.tab-btn[data-tab="appusers"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const alreadyLoaded = document.getElementById('appusers-table-wrap')?.innerHTML?.includes('<table');
+                if (!alreadyLoaded) loadAppUsers();
+            });
+        });
+    });
     </script>
 </body>
 </html>
