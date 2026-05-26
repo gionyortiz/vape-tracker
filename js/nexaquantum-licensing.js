@@ -28,6 +28,7 @@ class NexaQuantumLicenseManager {
             if (typeof this.setupLicenseValidation === 'function') {
                 this.setupLicenseValidation();
             }
+            this.createLicenseModal();
             this.createLicenseStatus();
             this.addLicenseStyles();
             this.checkUpgradeRedirect();
@@ -948,6 +949,14 @@ class NexaQuantumLicenseManager {
     
     // Event Handlers
     setupLicenseModalEvents() {
+        // Close when clicking the dark backdrop outside the content box
+        const licenseModal = document.getElementById('license-modal');
+        if (licenseModal) {
+            licenseModal.addEventListener('click', (e) => {
+                if (e.target === licenseModal) this.hideLicenseModal();
+            });
+        }
+
         // Tab switching
         document.querySelectorAll('.license-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {

@@ -129,6 +129,14 @@ function initializeUserAuthentication() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
+
+    // Close login modal when clicking on the dark backdrop outside the box
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) hideLoginModal();
+        });
+    }
     
     // Check if login is required
     if (enterpriseState.systemSettings.requireLogin && !enterpriseState.currentUser) {
