@@ -1345,11 +1345,12 @@ class NexaQuantumLicenseManager {
     
     // External Methods
     contactSales() {
-        alert('Contact Sales\n\nFor Enterprise plans, please contact:\n\nEmail: sales@nexaquantum.com\nPhone: +1 (555) 123-4567\n\nWe\'ll get back to you within 24 hours!');
+        window.open('mailto:info@nexaquantum.net?subject=Enterprise%20Plan%20Inquiry%20-%20NexaQuantum%20El%20Duro%20Vaper%20POS&body=Hello%2C%0A%0AI%20am%20interested%20in%20the%20Enterprise%20plan.%20Please%20contact%20me%20with%20more%20information.%0A%0AThank%20you.', '_blank');
     }
     
     purchaseDirectLicense() {
-        alert('Purchase License Key\n\nTo purchase a direct license key:\n\n1. Visit: https://nexaquantum.com/purchase\n2. Select your plan\n3. Complete payment\n4. Receive license key via email\n\nDemo keys available for testing:\n• Monthly: NEXA-PROF-MONT-2025\n• Yearly: NEXA-PROF-YEAR-2025');
+        // Redirect to Stripe monthly checkout — same as subscribeToPlan('monthly')
+        window.open(this.stripeLinks.monthly, '_blank', 'noopener,noreferrer');
     }
 }
 
