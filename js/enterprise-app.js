@@ -26,7 +26,7 @@ let enterpriseState = {
         lowStockThreshold: 10,
         autoPrintReceipt: true,
         openCashDrawer: true,
-        requireLogin: true,
+        requireLogin: false,
         sessionTimeout: 120,
         auditTrail: true
     },
