@@ -69,7 +69,8 @@ class NexaQuantumLicenseManager {
         fetch(workerUrl)
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.ok && data.status === 'active') {
+                // worker returns { active, status, plan, currentPeriodEnd }
+                if (data.active === true) {
                     const expiration = data.currentPeriodEnd
                         ? new Date(data.currentPeriodEnd * 1000).toISOString()
                         : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
@@ -85,12 +86,14 @@ class NexaQuantumLicenseManager {
                     };
 
                     localStorage.setItem('nexaquantum_license', JSON.stringify(license));
-                    alert('✅ License activated! Thank you for subscribing to NexaQuantum POS.');
+                    alert('✅ License activated! Thank you for subscribing to NexaQuantum El Duro Vaper POS.');
                     window.location.reload();
-                } else if (data.ok === false && data.error === 'not found') {
-                    alert('⏳ Payment processing — please wait a minute and try again, or contact support.');
+                } else if (data.active === false && data.status === 'canceled') {
+                    alert('❌ Subscription canceled. Please re-subscribe to continue.');
+                } else if (data.active === false) {
+                    alert('⏳ Payment still processing — please wait 1-2 minutes and try again, or email info@nexaquantum.net');
                 } else {
-                    alert('❌ No active subscription found for ' + email + '. Please contact support.');
+                    alert('❌ No active subscription found for ' + email + '.\nEmail info@nexaquantum.net for help.');
                 }
             })
             .catch(function() {
@@ -242,12 +245,12 @@ class NexaQuantumLicenseManager {
                             <h4>Professional Monthly</h4>
                             <div class="plan-price">$39.99<span>/month</span></div>
                             <ul class="plan-features">
-                                <li>✅ Full POS functionality</li>
-                                <li>✅ Up to 5 stores</li>
+                                <li>✅ Full POS — no expiration</li>
+                                <li>✅ Cloud backup (your data saved on our server, not just your device)</li>
+                                <li>✅ Access from any phone, tablet, or computer</li>
+                                <li>✅ Up to 5 store locations</li>
                                 <li>✅ Employee management</li>
-                                <li>✅ Cloud backup</li>
-                                <li>✅ Priority support</li>
-                                <li>✅ Regular updates</li>
+                                <li>✅ Email support</li>
                             </ul>
                             <button class="plan-button" onclick="nexaLicense.subscribeToPlan('monthly', 39.99)">
                                 Subscribe Monthly
@@ -255,17 +258,17 @@ class NexaQuantumLicenseManager {
                         </div>
                         
                         <div class="plan-card savings">
-                            <div class="plan-badge savings-badge">Save $60/year</div>
+                            <div class="plan-badge savings-badge">Save $180/year</div>
                             <h4>Professional Yearly</h4>
                             <div class="plan-price">$299.99<span>/year</span></div>
-                            <div class="plan-savings">2 months FREE - Only $24.99/month</div>
+                            <div class="plan-savings">Only $25/month — 4 months FREE vs monthly</div>
                             <ul class="plan-features">
                                 <li>✅ Everything in Monthly</li>
-                                <li>✅ 2 months FREE ($60 savings)</li>
-                                <li>✅ Priority feature requests</li>
-                                <li>✅ Dedicated account manager</li>
-                                <li>✅ Advanced analytics</li>
-                                <li>✅ Custom integrations</li>
+                                <li>✅ 4 months FREE ($180 savings)</li>
+                                <li>✅ Cloud backup on our server</li>
+                                <li>✅ Priority email support</li>
+                                <li>✅ Free app updates all year</li>
+                                <li>✅ Up to 5 store locations</li>
                             </ul>
                             <button class="plan-button yearly" onclick="nexaLicense.subscribeToPlan('yearly', 299.99)">
                                 Subscribe Yearly
@@ -276,23 +279,15 @@ class NexaQuantumLicenseManager {
                             <h4>Enterprise</h4>
                             <div class="plan-price">$499.99<span>/year</span></div>
                             <ul class="plan-features">
-                                <li>✅ Unlimited stores</li>
-                                <li>✅ White-label options</li>
-                                <li>✅ API access</li>
-                                <li>✅ Custom development</li>
-                                <li>✅ 24/7 phone support</li>
-                                <li>✅ On-site training</li>
+                                <li>✅ Unlimited store locations</li>
+                                <li>✅ Cloud backup on our server</li>
+                                <li>✅ Custom branding (your logo/name)</li>
+                                <li>✅ Dedicated setup help</li>
+                                <li>✅ Priority phone & email support</li>
+                                <li>✅ Custom features on request</li>
                             </ul>
                             <button class="plan-button enterprise" onclick="nexaLicense.contactSales()">
-                                Contact Sales
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                                <li>✅ On-site training</li>
-                            </ul>
-                            <button class="plan-button enterprise" onclick="nexaLicense.contactSales()">
-                                Contact Sales
+                                Contact Us
                             </button>
                         </div>
                     </div>
