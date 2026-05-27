@@ -904,7 +904,7 @@ class NexaQuantumLicenseManager {
         const modal = document.getElementById('license-modal');
         if (modal) {
             modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            // Do NOT set overflow:hidden on body — it breaks all touch events on Android PWA
         }
     }
     
@@ -914,7 +914,7 @@ class NexaQuantumLicenseManager {
             modal.style.display = 'none';
             modal.style.pointerEvents = 'none';
         }
-        // Reset scroll-lock on both <body> and <html> for Android PWA compatibility
+        // Clear any overflow/position that may have been set in older cached versions
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.documentElement.style.overflow = '';
