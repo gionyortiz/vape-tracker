@@ -13,9 +13,8 @@ class NexaQuantumLicenseManager {
         // Stripe Payment Links — replace with your live URLs from the Stripe dashboard.
         // Currently only one product is live: Professional Monthly $39.99/mo.
         this.stripeLinks = {
-            monthly: 'https://buy.stripe.com/4gM3cu0Ud6Ea3VA4vIbbG00'
-            // yearly:  '...add when created in Stripe...',
-            // enterprise: '...add when created in Stripe...'
+            monthly: 'https://buy.stripe.com/4gM3cu0Ud6Ea3VA4vIbbG00',
+            yearly: 'https://buy.stripe.com/eVq14mdGZbYueAe6DQbbG01'
         };
 
         this.init();
