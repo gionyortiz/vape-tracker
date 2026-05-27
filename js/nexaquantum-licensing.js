@@ -277,7 +277,8 @@ class NexaQuantumLicenseManager {
                         
                         <div class="plan-card enterprise">
                             <h4>Enterprise</h4>
-                            <div class="plan-price">$499.99<span>/year</span></div>
+                            <div class="plan-price" style="font-size:1.3rem;font-weight:700;">Custom Pricing</div>
+                            <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">Contact us for a quote based on your number of locations</div>
                             <ul class="plan-features">
                                 <li>✅ Unlimited store locations</li>
                                 <li>✅ Cloud backup on our server</li>
