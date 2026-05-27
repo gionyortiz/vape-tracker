@@ -810,7 +810,7 @@ class NexaQuantumLicenseManager {
     }
 
     showTrialBanner() {
-        // Show a banner indicating trial status
+        // Show a banner indicating trial status — positioned BELOW the fixed navbar
         const existingBanner = document.getElementById('trial-banner');
         if (existingBanner) {
             return; // Already showing
@@ -820,19 +820,25 @@ class NexaQuantumLicenseManager {
         banner.id = 'trial-banner';
         banner.style.cssText = `
             position: fixed;
-            top: 0;
+            top: 60px;
             left: 0;
             right: 0;
             background: linear-gradient(90deg, #f39c12, #e67e22);
             color: white;
-            padding: 12px;
+            padding: 8px 40px 8px 12px;
             text-align: center;
             font-weight: bold;
-            z-index: 9999;
+            z-index: 999;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            pointer-events: none;
         `;
         banner.innerHTML = '🎉 NexaQuantum - 30 Day FREE Trial | $39.99/month after trial';
+        // Auto-dismiss after 6 seconds so it never blocks the UI
         document.body.insertBefore(banner, document.body.firstChild);
+        setTimeout(() => {
+            const b = document.getElementById('trial-banner');
+            if (b) b.remove();
+        }, 6000);
     }
     
     // Data Management
@@ -906,8 +912,12 @@ class NexaQuantumLicenseManager {
         const modal = document.getElementById('license-modal');
         if (modal) {
             modal.style.display = 'none';
-            document.body.style.overflow = '';
+            modal.style.pointerEvents = 'none';
         }
+        // Reset scroll-lock on both <body> and <html> for Android PWA compatibility
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.documentElement.style.overflow = '';
     }
     
     isModalVisible() {

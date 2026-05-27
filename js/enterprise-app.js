@@ -547,6 +547,8 @@ function loadSystemSettings() {
     if (savedSettings) {
         enterpriseState.systemSettings = { ...enterpriseState.systemSettings, ...JSON.parse(savedSettings) };
     }
+    // Always keep requireLogin disabled — login modal must never auto-block the app
+    enterpriseState.systemSettings.requireLogin = false;
 }
 
 // Modal management
