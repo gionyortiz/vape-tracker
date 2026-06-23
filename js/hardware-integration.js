@@ -525,3 +525,147 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Hardware integration initialized');
     }
 });
+
+// HardwareIntegration global — wires up the Scanner page buttons
+window.HardwareIntegration = {
+    _codeReader: null,
+    _stream: null,
+    _isScanning: false,
+    _lastScan: 0,
+
+    async startScanner() {
+        if (this._isScanning) return;
+        const video = document.getElementById('scanner-video');
+        const startBtn = document.getElementById('start-scanner-btn');
+        const stopBtn = document.getElementById('stop-scanner-btn');
+        const resultsList = document.getElementById('scan-results-list');
+        if (!video) return;
+
+        try {
+            if (startBtn) startBtn.style.display = 'none';
+            if (stopBtn) stopBtn.style.display = 'inline-flex';
+            if (resultsList) resultsList.innerHTML = '<div style="color:#aaa;padding:12px;">Camera starting — point at a barcode to scan</div>';
+
+            // Stop any previous reader
+            if (this._codeReader) {
+                try { this._codeReader.reset(); } catch (e) {}
+                this._codeReader = null;
+            }
+            if (this._stream) {
+                this._stream.getTracks().forEach(t => t.stop());
+                this._stream = null;
+            }
+
+            // Request back camera (environment) first to get permission + correct device
+            this._stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+            });
+            video.srcObject = this._stream;
+            await video.play();
+
+            // Grab the specific device ID so ZXing uses the same back camera
+            const track = this._stream.getVideoTracks()[0];
+            const deviceId = track && track.getSettings ? track.getSettings().deviceId : undefined;
+
+            this._isScanning = true;
+
+            // Use ZXing for barcode detection (same pattern as enhanced-inventory.js)
+            const ReaderClass = (typeof ZXing !== 'undefined') && (ZXing.BrowserMultiFormatReader || ZXing.BrowserBarcodeReader);
+            if (!ReaderClass) throw new Error('ZXing library not loaded');
+            this._codeReader = new ReaderClass();
+
+            this._codeReader.decodeFromVideoDevice(deviceId || undefined, video, (result, err) => {
+                if (result && this._isScanning) {
+                    const now = Date.now();
+                    if (now - this._lastScan < 1500) return; // debounce duplicate scans
+                    this._lastScan = now;
+                    const code = result.getText ? result.getText() : (result.text || String(result));
+                    this._onScan(code);
+                }
+                // NotFoundException is normal (no barcode in frame) — suppress silently
+            });
+
+            if (resultsList) resultsList.innerHTML = '<div style="color:#4CAF50;padding:12px;">Camera ready — point at a barcode</div>';
+
+        } catch (err) {
+            console.error('Scanner start error:', err);
+            this._isScanning = false;
+            this._stream = null;
+            if (startBtn) startBtn.style.display = '';
+            if (stopBtn) stopBtn.style.display = 'none';
+            if (resultsList) {
+                resultsList.innerHTML = '<div style="color:#f44336;padding:12px;border:1px solid #f44336;border-radius:8px;">'
+                    + '<strong>Camera Error:</strong> ' + (err.message || 'Camera access denied')
+                    + '<br><small>Please allow camera access in your browser settings and try again.</small></div>';
+            }
+        }
+    },
+
+    stopScanner() {
+        this._isScanning = false;
+        if (this._codeReader) {
+            try { this._codeReader.reset(); } catch (e) {}
+            this._codeReader = null;
+        }
+        if (this._stream) {
+            this._stream.getTracks().forEach(t => t.stop());
+            this._stream = null;
+        }
+        const video = document.getElementById('scanner-video');
+        if (video) video.srcObject = null;
+        const startBtn = document.getElementById('start-scanner-btn');
+        const stopBtn = document.getElementById('stop-scanner-btn');
+        if (startBtn) startBtn.style.display = '';
+        if (stopBtn) stopBtn.style.display = 'none';
+    },
+
+    _onScan(barcode) {
+        if (navigator.vibrate) navigator.vibrate([100]);
+        this._beep();
+        this._showResult(barcode);
+    },
+
+    _showResult(barcode) {
+        const resultsList = document.getElementById('scan-results-list');
+        if (!resultsList) return;
+
+        const products = JSON.parse(localStorage.getItem('vape_products') || '[]');
+        const product = products.find(function(p) { return p.barcode === barcode || p.sku === barcode; });
+        const time = new Date().toLocaleTimeString();
+        var html;
+        if (product) {
+            html = '<div style="background:#1a2e1a;border:1px solid #4CAF50;border-radius:8px;padding:12px;margin-bottom:8px;">'
+                + '<div style="color:#4CAF50;font-weight:bold;font-size:16px;"><i class="fas fa-check-circle"></i> ' + product.name + '</div>'
+                + '<div style="color:#ccc;font-size:13px;margin-top:4px;">Barcode: ' + barcode + ' &nbsp;|&nbsp; Price: $' + (parseFloat(product.price) || 0).toFixed(2) + ' &nbsp;|&nbsp; Stock: ' + (product.stock || 0) + '</div>'
+                + '<div style="color:#888;font-size:12px;margin-top:2px;">' + time + '</div>'
+                + '</div>';
+        } else {
+            html = '<div style="background:#2a1a1a;border:1px solid #FF9800;border-radius:8px;padding:12px;margin-bottom:8px;">'
+                + '<div style="color:#FF9800;font-weight:bold;font-size:16px;"><i class="fas fa-exclamation-triangle"></i> ' + barcode + '</div>'
+                + '<div style="color:#aaa;font-size:13px;margin-top:4px;">Not found in inventory</div>'
+                + '<div style="color:#888;font-size:12px;margin-top:2px;">' + time + '</div>'
+                + '</div>';
+        }
+        resultsList.innerHTML = html + resultsList.innerHTML;
+    },
+
+    lookupProduct(barcode) {
+        if (!barcode || !barcode.trim()) return;
+        this._showResult(barcode.trim());
+    },
+
+    _beep() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc = ctx.createOscillator();
+            var g = ctx.createGain();
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.frequency.value = 880;
+            g.gain.setValueAtTime(0.4, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        } catch (e) {}
+    }
+};

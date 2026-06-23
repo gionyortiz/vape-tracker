@@ -142,23 +142,25 @@ Use exact file paths: "Fix stock validation in `js/inventory.js` — prevent neg
 
 ## Android Deployment (Current Status)
 
-**Active deployment via PWABuilder**: App is being packaged at https://www.pwabuilder.com/
-- PWA Score: 35/44 (sufficient for packaging)
-- Manifest URL: nexaquantumvape.com/manifest.json
-- Package ID: `com.nexaquantum.vape.pos`
-- Target: Google Play Store
+**✅ RELEASE BUILD COMPLETE**: Android package ready for Play Store submission
+- **Location**: `android-release/NexaQuantum.aab` (production-signed .aab file)
+- **Signing key**: `android-release/signing.keystore` (🔒 CRITICAL: Back this up securely!)
+- **Package ID**: `com.nexaquantum.vape.pos`
+- **PWA Source**: Built via PWABuilder from nexaquantumvape.com/manifest.json
 
 **Deployment files ready**:
-- `.well-known/assetlinks.json` — Link app to website (update fingerprint from PWABuilder)
-- `START-HERE-PWABUILDER.md` — Immediate next steps guide
-- `PWABUILDER-ANDROID-GUIDE.md` — Complete packaging & Play Store guide
-- `ANDROID-DEPLOYMENT-CHECKLIST.md` — Progress tracker
+- `android-release/NexaQuantum.aab` — Production-signed Android App Bundle for Play Store
+- `android-release/assetlinks.json` — Digital Asset Links file (must upload to `https://nexaquantumvape.com/.well-known/assetlinks.json`)
+- `android-release/signing-key-info.txt` — Key credentials (store securely!)
+- `.well-known/assetlinks.json` — Template ready for web server upload
 
-**When user gets .aab file from PWABuilder**:
-1. Save to `android-release/` folder
-2. Backup signing keystore (critical for updates!)
-3. Upload assetlinks.json to website `.well-known/` directory
-4. Upload .aab to Play Console (https://play.google.com/console)
+**Next steps for Play Store submission**:
+1. ✅ DONE: Build signed .aab package
+2. ⏭️ TODO: Upload `assetlinks.json` to live website
+3. ⏭️ TODO: Submit `NexaQuantum.aab` to Play Console (https://play.google.com/console)
+4. See `START-HERE-PWABUILDER.md` and `ANDROID-DEPLOYMENT-CHECKLIST.md` for detailed steps
+
+**CRITICAL**: The `signing.keystore` file is required for ALL future app updates. Store multiple encrypted backups.
 
 ## Further Reading
 - `README.md` — setup, features, quick start guide

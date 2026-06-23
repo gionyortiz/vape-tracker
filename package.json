@@ -12,7 +12,8 @@
     "run-ios": "cordova run ios",
     "run-android": "cordova run android",
     "prepare": "cordova prepare",
-    "clean": "cordova clean"
+    "clean": "cordova clean",
+    "release:check": "powershell -ExecutionPolicy Bypass -File scripts/release-check.ps1"
   },
   "keywords": [
     "pos",

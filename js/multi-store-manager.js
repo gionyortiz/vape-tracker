@@ -13,11 +13,23 @@ class MultiStoreManager {
         this.setupNetworkMonitoring();
     }
 
+    safeParseStorage(key, fallbackValue) {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined || raw === '') return fallbackValue;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn(`Invalid JSON in localStorage for ${key}. Resetting.`, e?.message || e);
+            try { localStorage.removeItem(key); } catch (_) {}
+            return fallbackValue;
+        }
+    }
+
     loadStoreData() {
-        this.stores = JSON.parse(localStorage.getItem('vape_stores')) || this.getDefaultStores();
+        this.stores = this.safeParseStorage('vape_stores', null) || this.getDefaultStores();
         this.currentStoreId = localStorage.getItem('vape_current_store') || this.stores[0]?.id;
-        this.franchises = JSON.parse(localStorage.getItem('vape_franchises')) || [];
-        this.pendingSyncs = JSON.parse(localStorage.getItem('vape_pending_syncs')) || [];
+        this.franchises = this.safeParseStorage('vape_franchises', []) || [];
+        this.pendingSyncs = this.safeParseStorage('vape_pending_syncs', []) || [];
     }
 
     saveStoreData() {
@@ -537,8 +549,16 @@ class MultiStoreManager {
             let backup = null;
 
             for (const key of backupKeys) {
-                const data = JSON.parse(localStorage.getItem(key));
-                if (data.id === backupId) {
+                const raw = localStorage.getItem(key);
+                if (!raw) continue;
+                let data;
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    console.warn(`Skipping invalid backup JSON in ${key}.`, e?.message || e);
+                    continue;
+                }
+                if (data && data.id === backupId) {
                     backup = data;
                     break;
                 }
@@ -764,6 +784,54 @@ class MultiStoreManager {
                 resolve(null); // No backup found for demo
             }, 1000);
         });
+    }
+
+    // Static convenience wrappers to keep legacy calls from breaking
+    static ensureInstance() {
+        if (!window.vapeTracker) return null;
+        if (!window.vapeTracker.multiStore) {
+            window.vapeTracker.multiStore = new MultiStoreManager(window.vapeTracker);
+        }
+        return window.vapeTracker.multiStore;
+    }
+
+    static initialize() {
+        return this.ensureInstance();
+    }
+
+    static showAddStoreModal() {
+        const instance = this.ensureInstance();
+        if (instance?.showAddStoreModal) instance.showAddStoreModal();
+    }
+
+    static syncAllStores() {
+        const instance = this.ensureInstance();
+        if (instance?.syncAllStores) instance.syncAllStores();
+    }
+
+    static enableCloudSync(apiKey) {
+        const instance = this.ensureInstance();
+        if (instance?.enableCloudSync) instance.enableCloudSync(apiKey);
+    }
+
+    static manualSync() {
+        const instance = this.ensureInstance();
+        if (instance?.manualSync) instance.manualSync();
+    }
+
+    static switchStore(storeId) {
+        const instance = this.ensureInstance();
+        if (instance?.switchStore) instance.switchStore(storeId);
+    }
+
+    static updateCurrentStoreInfo() {
+        const instance = this.ensureInstance();
+        if (instance?.updateCurrentStoreInfo) instance.updateCurrentStoreInfo();
+    }
+
+    static loadStoresGrid() {
+        const instance = this.ensureInstance();
+        if (instance?.loadStoresGrid) instance.loadStoresGrid();
     }
 }
 

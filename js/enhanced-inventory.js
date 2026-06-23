@@ -103,13 +103,21 @@ class EnhancedInventoryManager {
             
             this.isScanning = true;
             
-            // Initialize ZXing scanner
-            const codeReader = new ZXing.BrowserBarcodeReader();
+            // Initialize ZXing scanner with compatibility fallback
+            const ReaderClass = (typeof ZXing !== 'undefined') && (ZXing.BrowserBarcodeReader || ZXing.BrowserMultiFormatReader);
+            if (!ReaderClass) {
+                throw new Error('ZXing scanner library is not loaded');
+            }
+            const codeReader = new ReaderClass();
             
             codeReader.decodeFromVideoDevice(undefined, video, (result, err) => {
                 if (result && this.isScanning) {
-                    this.handleScannedBarcode(result.text);
+                    const barcode = result.getText ? result.getText() : (result.text || String(result));
+                    this.handleScannedBarcode(barcode);
                     this.stopInventoryScanner();
+                }
+                if (err && !(typeof ZXing !== 'undefined' && ZXing.NotFoundException && err instanceof ZXing.NotFoundException)) {
+                    console.warn('Inventory scan warning:', err);
                 }
             });
             

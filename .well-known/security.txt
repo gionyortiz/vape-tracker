@@ -1,0 +1,6 @@
+Contact: mailto:support@nexaquantumvape.com
+Expires: 2027-05-31T23:59:59Z
+Preferred-Languages: en, es
+Canonical: https://eldurohardvape.com/.well-known/security.txt
+Policy: https://eldurohardvape.com/privacy-policy.html
+Acknowledgments: https://eldurohardvape.com/support.html

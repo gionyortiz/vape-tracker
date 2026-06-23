@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct App Testing</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .error {
+            background: #ffcccc;
+            color: #cc0000;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #cc0000;
+        }
+        .success {
+            background: #ccffcc;
+            color: #00cc00;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #00cc00;
+        }
+        .info {
+            background: #ccccff;
+            color: #0000cc;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #0000cc;
+        }
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ccc;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔍 NexaQuantum App - Direct Testing Report</h2>
+        <div id="results"></div>
+    </div>
+
+    <h3>🖥️ Live App Instance</h3>
+    <iframe id="appframe" src="http://127.0.0.1:8080"></iframe>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function log(type, title, message) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = type;
+            msgDiv.innerHTML = `<strong>${title}:</strong> ${message}`;
+            resultsDiv.appendChild(msgDiv);
+            console.log(`[${type}] ${title}: ${message}`);
+        }
+
+        // Capture all errors
+        window.addEventListener('error', (e) => {
+            log('error', 'JavaScript Error', e.message + ' (at ' + e.filename + ':' + e.lineno + ')');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            log('error', 'Unhandled Promise Rejection', e.reason);
+        });
+
+        // Test 1: Check localStorage
+        log('info', 'Storage Test', 'localStorage available: ' + (typeof localStorage !== 'undefined'));
+
+        try {
+            const products = JSON.parse(localStorage.getItem('vape_products') || '[]');
+            log('success', 'Products Loading', `Loaded ${products.length} products from storage`);
+            
+            if (products.length > 0) {
+                log('info', 'First Product', JSON.stringify(products[0], null, 2));
+            }
+        } catch (e) {
+            log('error', 'Products Loading', e.message);
+        }
+
+        // Test 2: Check for required DOM elements
+        setTimeout(() => {
+            const checkElements = ['dashboard', 'inventory', 'sales', 'customers', 'reports', 'settings'];
+            let foundElements = 0;
+
+            checkElements.forEach(el => {
+                const elem = document.getElementById(el);
+                if (elem) {
+                    foundElements++;
+                    log('success', `Page "${el}"`, 'Found in DOM');
+                } else {
+                    log('error', `Page "${el}"`, 'NOT found in DOM');
+                }
+            });
+
+            log('info', 'Pages Summary', `Found ${foundElements}/${checkElements.length} expected pages`);
+        }, 2000);
+
+        // Test 3: Check script loading
+        setTimeout(() => {
+            const requiredScripts = [
+                'app.js',
+                'inventory.js',
+                'sales.js',
+                'dashboard.js',
+                'data-manager.js'
+            ];
+
+            const scripts = Array.from(document.querySelectorAll('script'))
+                .map(s => s.src)
+                .filter(s => s);
+
+            requiredScripts.forEach(script => {
+                const found = scripts.some(s => s.includes(script));
+                if (found) {
+                    log('success', `Script ${script}`, 'Loaded');
+                } else {
+                    log('error', `Script ${script}`, 'NOT loaded');
+                }
+            });
+        }, 2000);
+
+        // Test 4: Check global variables
+        setTimeout(() => {
+            if (typeof window.VapeTracker !== 'undefined') {
+                log('success', 'VapeTracker Class', 'Defined globally');
+            } else {
+                log('error', 'VapeTracker Class', 'NOT defined - app may not have loaded properly');
+            }
+
+            if (typeof window.app !== 'undefined') {
+                log('success', 'App Instance', 'Created (window.app exists)');
+            } else {
+                log('error', 'App Instance', 'NOT created - app initialization failed');
+            }
+        }, 2000);
+
+        // Test 5: Check for common errors
+        setTimeout(() => {
+            try {
+                // Check if manifest is valid
+                fetch('manifest.json')
+                    .then(r => r.json())
+                    .then(manifest => {
+                        log('success', 'Manifest File', 'Valid JSON');
+                    })
+                    .catch(e => {
+                        log('error', 'Manifest File', e.message);
+                    });
+            } catch (e) {
+                log('error', 'Manifest Check', e.message);
+            }
+        }, 2000);
+
+        // Test 6: Service Worker
+        setTimeout(() => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations()
+                    .then(registrations => {
+                        if (registrations.length > 0) {
+                            log('success', 'Service Worker', 'Registered (' + registrations.length + ' registration(s))');
+                        } else {
+                            log('info', 'Service Worker', 'Not yet registered (normal on first visit)');
+                        }
+                    })
+                    .catch(e => {
+                        log('error', 'Service Worker', e.message);
+                    });
+            } else {
+                log('error', 'Service Worker', 'Not supported in browser');
+            }
+        }, 2000);
+
+        log('info', 'Test Initialization', 'Starting app tests...');
+    </script>
+</body>
+</html>

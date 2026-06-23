@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnostic Report - NexaQuantum App</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #252526;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .header {
+            background: #007acc;
+            padding: 20px;
+            color: white;
+        }
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        .section h3 {
+            color: #4fc1ff;
+            margin-top: 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 5px 5px 5px 0;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .status.success {
+            background: #0d6d3d;
+            color: #0fd35e;
+        }
+        .status.error {
+            background: #5f1313;
+            color: #f48771;
+        }
+        .status.warning {
+            background: #664d13;
+            color: #dcdca3;
+        }
+        .status.info {
+            background: #1e3a5f;
+            color: #75beff;
+        }
+        .log-entry {
+            padding: 8px;
+            margin: 3px 0;
+            border-left: 3px solid;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-entry.error {
+            border-left-color: #f48771;
+            background: rgba(244, 135, 113, 0.1);
+            color: #f48771;
+        }
+        .log-entry.success {
+            border-left-color: #0fd35e;
+            background: rgba(15, 211, 94, 0.1);
+            color: #0fd35e;
+        }
+        .log-entry.warn {
+            border-left-color: #dcdca3;
+            background: rgba(220, 220, 163, 0.1);
+            color: #dcdca3;
+        }
+        .log-entry.info {
+            border-left-color: #75beff;
+            background: rgba(117, 190, 255, 0.1);
+            color: #75beff;
+        }
+        .timeline {
+            border-left: 2px solid #3e3e42;
+            padding-left: 15px;
+            margin-left: 5px;
+        }
+        .timeline-item {
+            position: relative;
+            padding: 10px 0 10px 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -11px;
+            top: 15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3e3e42;
+        }
+        .timeline-item.active::before {
+            background: #4fc1ff;
+        }
+        code {
+            background: #1e1e1e;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #ce9178;
+        }
+        .details {
+            background: #1e1e1e;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 NexaQuantum Vape POS - Diagnostic Report</h1>
+            <p>Real-time application diagnostics and error tracking</p>
+        </div>
+
+        <div class="section">
+            <h3>📊 System Status</h3>
+            <div id="system-status"></div>
+        </div>
+
+        <div class="section">
+            <h3>⏱️ Initialization Timeline</h3>
+            <div class="timeline" id="timeline"></div>
+        </div>
+
+        <div class="section">
+            <h3>🚨 Errors & Warnings</h3>
+            <div id="errors-section"></div>
+        </div>
+
+        <div class="section">
+            <h3>📦 Script Loading Status</h3>
+            <div id="scripts-status"></div>
+        </div>
+
+        <div class="section">
+            <h3>🧠 Memory & Performance</h3>
+            <div id="memory-info"></div>
+        </div>
+
+        <div class="section">
+            <h3>💾 Storage Analysis</h3>
+            <div id="storage-info"></div>
+        </div>
+
+        <div class="section">
+            <h3>🔍 DOM Elements Check</h3>
+            <div id="dom-check"></div>
+        </div>
+
+        <div class="section" style="background: #2d2d30;">
+            <h3>📝 Live Console Output</h3>
+            <div id="console-output" style="background: #1e1e1e; padding: 10px; border-radius: 3px; max-height: 300px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        const diagnostics = {
+            errors: [],
+            warnings: [],
+            logs: [],
+            timeline: [],
+            startTime: performance.now()
+        };
+
+        // Capture console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function(...args) {
+            diagnostics.logs.push({ type: 'log', args, time: Date.now() });
+            addConsoleEntry('info', args.join(' '));
+            originalLog.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            diagnostics.errors.push({ args, time: Date.now() });
+            addConsoleEntry('error', args.join(' '));
+            originalError.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            diagnostics.warnings.push({ args, time: Date.now() });
+            addConsoleEntry('warn', args.join(' '));
+            originalWarn.apply(console, args);
+        };
+
+        function addConsoleEntry(level, message) {
+            const output = document.getElementById('console-output');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + level;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            output.appendChild(entry);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function addTimeline(message, type = 'info') {
+            const elapsed = (performance.now() - diagnostics.startTime).toFixed(0);
+            diagnostics.timeline.push({ message, type, time: elapsed });
+            
+            const timeline = document.getElementById('timeline');
+            const item = document.createElement('div');
+            item.className = 'timeline-item ' + (type === 'error' ? 'active' : '');
+            item.innerHTML = `<span class="status ${type}">${type.toUpperCase()}</span> <code>+${elapsed}ms</code> ${message}`;
+            timeline.appendChild(item);
+        }
+
+        // Start diagnostics
+        addTimeline('Diagnostics started', 'info');
+
+        // System checks
+        const systemStatus = document.getElementById('system-status');
+        
+        // Check browser APIs
+        const checks = [
+            { name: 'localStorage', test: () => typeof(Storage) !== 'undefined' },
+            { name: 'sessionStorage', test: () => typeof(sessionStorage) !== 'undefined' },
+            { name: 'IndexedDB', test: () => typeof(indexedDB) !== 'undefined' },
+            { name: 'Service Worker', test: () => 'serviceWorker' in navigator },
+            { name: 'Fetch API', test: () => typeof(fetch) !== 'undefined' },
+            { name: 'Promise', test: () => typeof(Promise) !== 'undefined' },
+            { name: 'WebStorage', test: () => typeof(Storage) !== 'undefined' }
+        ];
+
+        checks.forEach(check => {
+            const result = check.test();
+            const status = result ? 'success' : 'error';
+            const icon = result ? '✓' : '✗';
+            systemStatus.innerHTML += `<span class="status ${status}">${icon} ${check.name}</span>`;
+            addTimeline(`${check.name} available: ${result}`, status === 'success' ? 'info' : 'error');
+        });
+
+        // Check global objects
+        addTimeline('Checking global objects', 'info');
+        
+        setTimeout(() => {
+            const globals = {
+                'window.VapeTracker': typeof window.VapeTracker,
+                'window.vapeTracker': typeof window.vapeTracker,
+                'window.i18n': typeof window.i18n,
+                'window.InventoryManager': typeof window.InventoryManager,
+                'window.SalesManager': typeof window.SalesManager
+            };
+
+            const globalsDiv = document.getElementById('system-status');
+            for (const [name, type] of Object.entries(globals)) {
+                const exists = type !== 'undefined';
+                const status = exists ? 'success' : 'warning';
+                const icon = exists ? '✓' : '⚠';
+                globalsDiv.innerHTML += `<span class="status ${status}">${icon} ${name}: ${type}</span>`;
+                addTimeline(`${name}: ${type}`, exists ? 'info' : 'warn');
+            }
+        }, 500);
+
+        // Error/Warning summary
+        window.addEventListener('error', (event) => {
+            addTimeline(`JS Error: ${event.message}`, 'error');
+            const errorsDiv = document.getElementById('errors-section');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry error';
+            entry.innerHTML = `<strong>${event.filename}:${event.lineno}</strong><br>${event.message}`;
+            errorsDiv.appendChild(entry);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            addTimeline(`Unhandled Promise: ${event.reason}`, 'error');
+            const errorsDiv = document.getElementById('errors-section');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry error';
+            entry.innerHTML = `<strong>Unhandled Rejection:</strong><br>${event.reason}`;
+            errorsDiv.appendChild(entry);
+        });
+
+        // Script loading check
+        setTimeout(() => {
+            addTimeline('Checking script load status', 'info');
+            const requiredScripts = [
+                'nexaquantum-licensing.js',
+                'customer-crm.js',
+                'i18n.js',
+                'app.js',
+                'inventory.js',
+                'sales.js',
+                'dashboard.js',
+                'data-manager.js',
+                'hardware-integration.js'
+            ];
+
+            const scripts = Array.from(document.querySelectorAll('script'))
+                .map(s => s.src)
+                .filter(s => s);
+
+            const scriptsDiv = document.getElementById('scripts-status');
+            requiredScripts.forEach(script => {
+                const found = scripts.some(s => s.includes(script));
+                const status = found ? 'success' : 'error';
+                scriptsDiv.innerHTML += `<div class="log-entry ${status === 'success' ? 'success' : 'error'}">
+                    ${found ? '✓' : '✗'} ${script}
+                </div>`;
+                addTimeline(`Script loaded: ${script}`, status === 'success' ? 'info' : 'error');
+            });
+        }, 1000);
+
+        // Storage analysis
+        setTimeout(() => {
+            addTimeline('Analyzing localStorage', 'info');
+            const storageDiv = document.getElementById('storage-info');
+            
+            try {
+                const keys = Object.keys(localStorage);
+                storageDiv.innerHTML += `<p><strong>Total keys:</strong> ${keys.length}</p>`;
+                storageDiv.innerHTML += '<div class="details"><strong>Storage Keys:</strong><br>';
+                
+                keys.forEach(key => {
+                    const value = localStorage.getItem(key);
+                    let size = new Blob([value]).size;
+                    storageDiv.innerHTML += `${key}: ${(size / 1024).toFixed(2)} KB<br>`;
+                });
+                storageDiv.innerHTML += '</div>';
+
+                // Check specific app data
+                const checkKeys = ['vape_products', 'vape_customers', 'vape_transactions', 'vape_settings'];
+                checkKeys.forEach(key => {
+                    const exists = localStorage.getItem(key) !== null;
+                    const status = exists ? 'success' : 'warning';
+                    storageDiv.innerHTML += `<span class="status ${status}">${exists ? '✓' : '⚠'} ${key}</span>`;
+                });
+            } catch (e) {
+                storageDiv.innerHTML += `<div class="log-entry error">Storage Error: ${e.message}</div>`;
+                addTimeline(`Storage Error: ${e.message}`, 'error');
+            }
+        }, 1500);
+
+        // DOM check
+        setTimeout(() => {
+            addTimeline('Checking DOM elements', 'info');
+            const domDiv = document.getElementById('dom-check');
+            
+            const pageIds = ['dashboard', 'inventory', 'sales', 'customers', 'reports', 'settings', 'scanner', 'employees'];
+            pageIds.forEach(id => {
+                const elem = document.getElementById(id);
+                const status = elem ? 'success' : 'error';
+                domDiv.innerHTML += `<span class="status ${status}">${elem ? '✓' : '✗'} #${id}</span>`;
+            });
+
+            // Check critical elements
+            const nav = document.querySelector('.navbar');
+            const cart = document.getElementById('cart-items');
+            const settings = document.querySelector('[data-page="settings"]');
+            
+            domDiv.innerHTML += `<p><strong>Critical Elements:</strong></p>`;
+            domDiv.innerHTML += `<span class="status ${nav ? 'success' : 'error'}">${nav ? '✓' : '✗'} .navbar</span>`;
+            domDiv.innerHTML += `<span class="status ${cart ? 'success' : 'warning'}">${cart ? '✓' : '⚠'} #cart-items</span>`;
+            domDiv.innerHTML += `<span class="status ${settings ? 'success' : 'error'}">${settings ? '✓' : '✗'} Settings page</span>`;
+        }, 2000);
+
+        // Memory check
+        if (performance.memory) {
+            const memDiv = document.getElementById('memory-info');
+            const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
+            const limit = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(2);
+            memDiv.innerHTML = `<p>Heap Usage: ${used} MB / ${limit} MB</p>`;
+        }
+
+        addTimeline('Diagnostics complete', 'success');
+    </script>
+</body>
+</html>

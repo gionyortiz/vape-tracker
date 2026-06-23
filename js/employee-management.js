@@ -36,11 +36,23 @@ class EmployeeManager {
         this.loadEmployeeData();
     }
 
+    safeParseStorage(key, fallbackValue) {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined || raw === '') return fallbackValue;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn(`Invalid JSON in localStorage for ${key}. Resetting.`, e?.message || e);
+            try { localStorage.removeItem(key); } catch (_) {}
+            return fallbackValue;
+        }
+    }
+
     loadEmployeeData() {
-        this.employees = JSON.parse(localStorage.getItem('vape_employees')) || this.getDefaultEmployees();
-        this.shifts = JSON.parse(localStorage.getItem('vape_shifts')) || [];
-        this.timeEntries = JSON.parse(localStorage.getItem('vape_time_entries')) || [];
-        this.currentEmployee = JSON.parse(localStorage.getItem('vape_current_employee')) || null;
+        this.employees = this.safeParseStorage('vape_employees', null) || this.getDefaultEmployees();
+        this.shifts = this.safeParseStorage('vape_shifts', []) || [];
+        this.timeEntries = this.safeParseStorage('vape_time_entries', []) || [];
+        this.currentEmployee = this.safeParseStorage('vape_current_employee', null) || null;
     }
 
     saveEmployeeData() {
@@ -553,7 +565,34 @@ class EmployeeManager {
 
         return schedule;
     }
+
+    // Static convenience wrappers
+    static ensureInstance() {
+        if (!window.vapeTracker) return null;
+        if (!window.vapeTracker.employeeManager) {
+            window.vapeTracker.employeeManager = new EmployeeManager(window.vapeTracker);
+        }
+        return window.vapeTracker.employeeManager;
+    }
+
+    static initialize() {
+        return this.ensureInstance();
+    }
+
+    static updateStats() {
+        const instance = this.ensureInstance();
+        if (instance?.updateStats) instance.updateStats();
+    }
+
+    static loadEmployeeTable() {
+        const instance = this.ensureInstance();
+        if (instance?.loadEmployeeTable) instance.loadEmployeeTable();
+    }
 }
+
+// Alias for legacy code
+const EmployeeManagement = EmployeeManager;
+window.EmployeeManagement = EmployeeManager;
 
 // Add to main app
 document.addEventListener('DOMContentLoaded', () => {

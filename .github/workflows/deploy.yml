@@ -16,7 +16,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  release-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run release checks
+        shell: pwsh
+        run: ./scripts/release-check.ps1
+
   deploy:
+    needs: release-check
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

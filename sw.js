@@ -1,7 +1,7 @@
 // Service Worker for NexaQuantum POS PWA
 // Enables offline functionality and app-like experience
 
-const CACHE_NAME = 'nexaquantum-vape-v1.3.5';
+const CACHE_NAME = 'nexaquantum-vape-v1.3.8';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -32,8 +32,21 @@ const urlsToCache = [
   '/js/enhanced-inventory.js',
   '/js/visual-effects.js',
   '/js/mobile-enhancements.js',
-  '/images/nexaquantum-logo.png',
+  '/images/NXQ RETAIL.png',
+  '/images/icon-16.png',
+  '/images/icon-32.png',
+  '/images/icon-57.png',
+  '/images/icon-60.png',
+  '/images/icon-72.png',
+  '/images/icon-76.png',
+  '/images/icon-96.png',
+  '/images/icon-114.png',
+  '/images/icon-120.png',
+  '/images/icon-144.png',
+  '/images/icon-152.png',
+  '/images/icon-180.png',
   '/images/icon-192.png',
+  '/images/icon-384.png',
   '/images/icon-512.png'
 ];
 

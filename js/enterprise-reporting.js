@@ -15,8 +15,20 @@ class EnterpriseReporting {
         this.loadReportData();
     }
 
+    safeParseStorage(key, fallbackValue) {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined || raw === '') return fallbackValue;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn(`Invalid JSON in localStorage for ${key}. Resetting.`, e?.message || e);
+            try { localStorage.removeItem(key); } catch (_) {}
+            return fallbackValue;
+        }
+    }
+
     loadReportData() {
-        this.scheduledReports = JSON.parse(localStorage.getItem('vape_scheduled_reports')) || [];
+        this.scheduledReports = this.safeParseStorage('vape_scheduled_reports', []) || [];
     }
 
     saveReportData() {
@@ -356,7 +368,8 @@ class EnterpriseReporting {
                 inventoryTurnover: this.calculateOverallInventoryTurnover(),
                 grossProfitPerDay: grossProfit / Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)))
             },
-            generatedAt: new Date().toISOString()
+            generatedAt: new Date().toISOString(),
+            generatedBy: this.app.employeeManager?.currentEmployee?.id || 'system'
         };
     }
 
@@ -367,7 +380,7 @@ class EnterpriseReporting {
 
         const taxableTransactions = this.app.transactions.filter(t => {
             const tDate = new Date(t.date);
-            return t.type === 'sale' && tDate >= start && tDate <= end && t.tax > 0;
+            return t.type === 'sale' && tDate >= start && tDate <= end && (t.tax || 0) > 0;
         });
 
         // Tax summary by rate
@@ -858,6 +871,48 @@ class EnterpriseReporting {
         console.log('PDF generation not implemented in demo');
         alert('PDF export feature would be implemented with a PDF library');
     }
+
+    // Static convenience wrappers
+    static ensureInstance() {
+        if (!window.vapeTracker) return null;
+        if (!window.vapeTracker.reporting) {
+            window.vapeTracker.reporting = new EnterpriseReporting(window.vapeTracker);
+        }
+        return window.vapeTracker.reporting;
+    }
+
+    static initialize() {
+        return this.ensureInstance();
+    }
+
+    static updateKPIs() {
+        const instance = this.ensureInstance();
+        if (instance?.updateKPIs) instance.updateKPIs();
+    }
+
+    static updateStats() {
+        const instance = this.ensureInstance();
+        if (instance?.updateStats) instance.updateStats();
+    }
+}
+
+// Export for legacy/global access and ensure missing hooks never crash the app
+window.EnterpriseReporting = EnterpriseReporting;
+
+if (typeof window.EnterpriseReporting.updateKPIs !== 'function') {
+    window.EnterpriseReporting.updateKPIs = function () {};
+}
+if (typeof window.EnterpriseReporting.updateStats !== 'function') {
+    window.EnterpriseReporting.updateStats = function () {};
+}
+if (typeof window.EnterpriseReporting.showReportGeneratorModal !== 'function') {
+    window.EnterpriseReporting.showReportGeneratorModal = function () {};
+}
+if (typeof window.EnterpriseReporting.showScheduleModal !== 'function') {
+    window.EnterpriseReporting.showScheduleModal = function () {};
+}
+if (typeof window.EnterpriseReporting.generateQuickReport !== 'function') {
+    window.EnterpriseReporting.generateQuickReport = function () {};
 }
 
 // Add to main app

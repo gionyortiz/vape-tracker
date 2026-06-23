@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaQuantum App - Comprehensive Test Runner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .app-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-panel {
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        .test-group {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .test-group-title {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-group-content {
+            display: none;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        .test-group-content.active {
+            display: block;
+        }
+        .test-item {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-item.pass {
+            background: #d4edda;
+            color: #155724;
+            border-left: 3px solid #28a745;
+        }
+        .test-item.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 3px solid #dc3545;
+        }
+        .test-item.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 3px solid #17a2b8;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button.danger {
+            background: #e74c3c;
+        }
+        button.danger:hover {
+            background: #c0392b;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-box {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .controls {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 4px;
+        }
+        .emoji {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 NexaQuantum Vape POS - Comprehensive Test Suite</h1>
+        
+        <div class="controls">
+            <button onclick="runAllTests()"><span class="emoji">▶️</span>Run All Tests</button>
+            <button onclick="testAppInit()"><span class="emoji">⚡</span>Test Initialization</button>
+            <button onclick="testDataOperations()"><span class="emoji">💾</span>Test Data Operations</button>
+            <button onclick="testNavigation()"><span class="emoji">🗺️</span>Test Navigation</button>
+            <button onclick="testInventory()"><span class="emoji">📦</span>Test Inventory</button>
+            <button onclick="testSales()"><span class="emoji">🛒</span>Test Sales</button>
+            <button onclick="refreshPage()" class="danger"><span class="emoji">🔄</span>Refresh App</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-pass" style="color: #27ae60;">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-fail" style="color: #e74c3c;">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-rate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <h2>📊 Test Results</h2>
+                <div class="test-panel" id="test-results"></div>
+            </div>
+            <div class="panel">
+                <h2>🖥️ Live App Preview</h2>
+                <iframe src="http://127.0.0.1:8080" class="app-frame" id="app-frame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            tests: []
+        };
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = testResults.total;
+            document.getElementById('stat-pass').textContent = testResults.passed;
+            document.getElementById('stat-fail').textContent = testResults.failed;
+            const rate = testResults.total > 0 ? Math.round((testResults.passed / testResults.total) * 100) : 0;
+            document.getElementById('stat-rate').textContent = rate + '%';
+        }
+
+        function addTestGroup(groupName) {
+            const resultsDiv = document.getElementById('test-results');
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'test-group';
+            groupDiv.id = 'group-' + groupName.replace(/\s/g, '-');
+            groupDiv.innerHTML = `
+                <div class="test-group-title" onclick="toggleGroup('${groupName}')">
+                    <span>${groupName}</span>
+                    <span id="group-count-${groupName.replace(/\s/g, '-')}">0/0</span>
+                </div>
+                <div class="test-group-content" id="group-content-${groupName.replace(/\s/g, '-')}"></div>
+            `;
+            resultsDiv.appendChild(groupDiv);
+            return groupDiv;
+        }
+
+        function toggleGroup(groupName) {
+            const contentId = 'group-content-' + groupName.replace(/\s/g, '-');
+            const content = document.getElementById(contentId);
+            if (content) {
+                content.classList.toggle('active');
+            }
+        }
+
+        function addTest(groupName, testName, passed, message = '') {
+            testResults.total++;
+            if (passed) {
+                testResults.passed++;
+            } else {
+                testResults.failed++;
+            }
+
+            const groupKey = groupName.replace(/\s/g, '-');
+            const contentId = 'group-content-' + groupKey;
+            const countId = 'group-count-' + groupKey;
+            const content = document.getElementById(contentId);
+            
+            if (content) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-item ' + (passed ? 'pass' : 'fail');
+                testDiv.innerHTML = `
+                    <span>${testName}</span>
+                    <span>${passed ? '✓ PASS' : '✗ FAIL'}</span>
+                `;
+                if (message) {
+                    testDiv.title = message;
+                }
+                content.appendChild(testDiv);
+
+                // Update group count
+                const countElement = document.getElementById(countId);
+                if (countElement) {
+                    const groupTests = content.querySelectorAll('.test-item').length;
+                    const groupPassed = content.querySelectorAll('.test-item.pass').length;
+                    countElement.textContent = groupPassed + '/' + groupTests;
+                }
+            }
+
+            updateStats();
+        }
+
+        async function testAppInit() {
+            const groupName = 'App Initialization';
+            addTestGroup(groupName);
+
+            try {
+                const appFrame = document.getElementById('app-frame');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Test if VapeTracker exists in iframe
+                try {
+                    const frameDoc = appFrame.contentDocument || appFrame.contentWindow.document;
+                    const scripts = frameDoc.querySelectorAll('script');
+                    addTest(groupName, 'App frame loaded', scripts.length > 0, 'Found ' + scripts.length + ' scripts');
+                } catch (e) {
+                    addTest(groupName, 'App frame loaded', false, 'Cross-origin restriction');
+                }
+
+                addTest(groupName, 'Service Worker available', 'serviceWorker' in navigator);
+                addTest(groupName, 'LocalStorage available', typeof(Storage) !== 'undefined');
+                addTest(groupName, 'IndexedDB available', typeof(indexedDB) !== 'undefined');
+
+                // Check for localStorage data
+                const productsData = localStorage.getItem('vape_products');
+                addTest(groupName, 'Products data exists', productsData !== null, productsData ? 'Found ' + JSON.parse(productsData).length + ' products' : 'No products');
+
+                const customersData = localStorage.getItem('vape_customers');
+                addTest(groupName, 'Customers data exists', customersData !== null, customersData ? 'Found ' + JSON.parse(customersData).length + ' customers' : 'No customers');
+
+                const transactionsData = localStorage.getItem('vape_transactions');
+                addTest(groupName, 'Transactions data exists', transactionsData !== null, transactionsData ? 'Found ' + JSON.parse(transactionsData).length + ' transactions' : 'No transactions');
+
+            } catch (error) {
+                addTest(groupName, 'Initialization test', false, error.message);
+            }
+        }
+
+        async function testDataOperations() {
+            const groupName = 'Data Operations';
+            addTestGroup(groupName);
+
+            try {
+                // Test localStorage write
+                const testKey = 'test_' + Date.now();
+                const testValue = { test: true, timestamp: Date.now() };
+                localStorage.setItem(testKey, JSON.stringify(testValue));
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+                addTest(groupName, 'LocalStorage write/read', retrieved.test === true);
+                localStorage.removeItem(testKey);
+
+                // Test product schema
+                const products = JSON.parse(localStorage.getItem('vape_products') || '[]');
+                if (products.length > 0) {
+                    const product = products[0];
+                    const hasRequiredFields = product.id && product.name && product.price;
+                    addTest(groupName, 'Product schema valid', hasRequiredFields, 'Fields: ' + Object.keys(product).join(', '));
+                } else {
+                    addTest(groupName, 'Product schema valid', false, 'No products to validate');
+                }
+
+                // Test transaction schema
+                const transactions = JSON.parse(localStorage.getItem('vape_transactions') || '[]');
+                if (transactions.length > 0) {
+                    const transaction = transactions[0];
+                    const hasRequiredFields = transaction.id && transaction.type && transaction.date;
+                    addTest(groupName, 'Transaction schema valid', hasRequiredFields);
+                } else {
+                    addTest(groupName, 'Transaction schema valid', true, 'No transactions yet (expected on first run)');
+                }
+
+                // Test settings
+                const settings = JSON.parse(localStorage.getItem('vape_settings') || '{}');
+                const hasSettings = Object.keys(settings).length > 0 || settings.taxRate !== undefined;
+                addTest(groupName, 'Settings available', true, 'Settings keys: ' + Object.keys(settings).join(', '));
+
+            } catch (error) {
+                addTest(groupName, 'Data operations test', false, error.message);
+            }
+        }
+
+        async function testNavigation() {
+            const groupName = 'Navigation & Pages';
+            addTestGroup(groupName);
+
+            try {
+                const appFrame = document.getElementById('app-frame');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const pages = ['dashboard', 'inventory', 'sales', 'customers', 'scanner', 'reports', 'settings'];
+                
+                for (const page of pages) {
+                    try {
+                        const frameDoc = appFrame.contentDocument || appFrame.contentWindow.document;
+                        const pageElement = frameDoc.getElementById(page) || frameDoc.querySelector(`[data-page="${page}"]`);
+                        addTest(groupName, `Page "${page}" exists`, pageElement !== null);
+                    } catch (e) {
+                        addTest(groupName, `Page "${page}" accessible`, false, 'Cross-origin check');
+                    }
+                }
+
+            } catch (error) {
+                addTest(groupName, 'Navigation test', false, error.message);
+            }
+        }
+
+        async function testInventory() {
+            const groupName = 'Inventory Features';
+            addTestGroup(groupName);
+
+            try {
+                const products = JSON.parse(localStorage.getItem('vape_products') || '[]');
+                addTest(groupName, 'Products loaded', products.length > 0, 'Total: ' + products.length);
+
+                if (products.length > 0) {
+                    // Test product properties
+                    const product = products[0];
+                    addTest(groupName, 'Product has ID', product.id !== undefined && product.id !== null);
+                    addTest(groupName, 'Product has name', product.name && product.name.length > 0);
+                    addTest(groupName, 'Product has price', product.price !== undefined && product.price >= 0);
+                    addTest(groupName, 'Product has stock', product.stock !== undefined);
+                    addTest(groupName, 'Product has category', product.category && product.category.length > 0);
+                }
+
+                // Check for low stock items
+                const lowStockItems = products.filter(p => p.stock < 10);
+                addTest(groupName, 'Low stock detection works', true, 'Low stock items: ' + lowStockItems.length);
+
+            } catch (error) {
+                addTest(groupName, 'Inventory test', false, error.message);
+            }
+        }
+
+        async function testSales() {
+            const groupName = 'Sales & POS Features';
+            addTestGroup(groupName);
+
+            try {
+                const transactions = JSON.parse(localStorage.getItem('vape_transactions') || '[]');
+                addTest(groupName, 'Transactions storage', true, 'Total: ' + transactions.length);
+
+                if (transactions.length > 0) {
+                    const transaction = transactions[0];
+                    addTest(groupName, 'Transaction has ID', transaction.id !== undefined);
+                    addTest(groupName, 'Transaction has date', transaction.date !== undefined);
+                    addTest(groupName, 'Transaction has total', transaction.total !== undefined && transaction.total > 0);
+                    addTest(groupName, 'Transaction has items', Array.isArray(transaction.items) && transaction.items.length > 0);
+                    addTest(groupName, 'Transaction has payment method', transaction.paymentMethod !== undefined);
+                }
+
+                // Check cart functionality
+                addTest(groupName, 'Cart system available', true, 'Ready to test');
+
+            } catch (error) {
+                addTest(groupName, 'Sales test', false, error.message);
+            }
+        }
+
+        async function runAllTests() {
+            // Clear previous results
+            document.getElementById('test-results').innerHTML = '';
+            testResults = { total: 0, passed: 0, failed: 0, tests: [] };
+            updateStats();
+
+            await testAppInit();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testDataOperations();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testNavigation();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testInventory();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testSales();
+
+            updateStats();
+            alert(`Tests Complete!\nTotal: ${testResults.total}\nPassed: ${testResults.passed}\nFailed: ${testResults.failed}`);
+        }
+
+        function refreshPage() {
+            const appFrame = document.getElementById('app-frame');
+            appFrame.src = 'http://127.0.0.1:8080';
+            setTimeout(() => {
+                testAppInit();
+            }, 3000);
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runAllTests();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "NXQ RETAIL",
+    "slug": "nexaquantum-vape-tracker",
+    "owner": "gionyortiz",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0f18"
+    },
+    "ios": {
+      "bundleIdentifier": "com.nexaquantum.vapetracker",
+      "supportsTablet": true,
+      "icon": "./assets/icon.png",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.nxq.retail",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#0a0f18",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {},
+    "extra": {
+      "eas": {
+        "projectId": "7096c5ca-8848-465d-b36d-aa5e497ee3ab"
+      }
+    }
+  }
+}
